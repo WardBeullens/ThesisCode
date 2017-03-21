@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{22a3eaa2-eb1d-4f07-a957-88e10d81deba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UOVHash">
+      <UniqueIdentifier>{9ac70d17-9f57-4a76-bd36-a170ce7e0805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UOVClassic">
+      <UniqueIdentifier>{085d8cc6-4aae-417a-bd81-3abf9d425681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UOVTinF2">
+      <UniqueIdentifier>{b8c42089-3945-417c-93de-cc9c054d2f8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\common">
+      <UniqueIdentifier>{44e5c73c-8352-4243-9c33-7c767de5de24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UOVClassic">
+      <UniqueIdentifier>{7fb77098-575c-46db-9c24-f745e5d16eea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UOVTinF2">
+      <UniqueIdentifier>{312ee2d5-babc-4851-acc1-ba2706a46301}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UOVHash">
+      <UniqueIdentifier>{bea74799-e319-4b89-a964-9759cee3f770}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\common\buffer.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\csprng.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\F16Field.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\F32Field.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\F48Field.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\F64Field.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\F80Field.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\Keccak-readable-and-compact-c89.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\LinearAlgebra.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\twister.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UOVHash\MerkleTree.c">
+      <Filter>Source Files\UOVHash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UOVHash\UOVHash.c">
+      <Filter>Source Files\UOVHash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\common\main.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UOVClassic\UOVClassic.c">
+      <Filter>Source Files\UOVClassic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UOVTinF2\UOVTinF2.c">
+      <Filter>Source Files\UOVTinF2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\UOVTinF2\128Bitcontainer.c">
+      <Filter>Source Files\UOVTinF2</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\common\buffer.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\csprng.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\F16Field.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\F32Field.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\F48Field.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\F64Field.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\F80Field.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\LinearAlgebra.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\twister.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVHash\MerkleTree.h">
+      <Filter>Header Files\UOVHash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVHash\UOVHash.h">
+      <Filter>Header Files\UOVHash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVHash\UOVHashParameters.h">
+      <Filter>Header Files\UOVHash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\parameters.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVClassic\UOVClassic.h">
+      <Filter>Header Files\UOVClassic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVClassic\UOVClassicParameters.h">
+      <Filter>Header Files\UOVClassic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\api.h">
+      <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVClassic\UOVClassicApi.h">
+      <Filter>Header Files\UOVClassic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVHash\UOVHashApi.h">
+      <Filter>Header Files\UOVHash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVTinF2\128Bitcontainer.h">
+      <Filter>Header Files\UOVTinF2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2Parameters.h">
+      <Filter>Header Files\UOVTinF2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2Api.h">
+      <Filter>Header Files\UOVTinF2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2.h">
+      <Filter>Header Files\UOVTinF2</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
