@@ -1,4 +1,4 @@
-#include "merkleTree.h"
+#include "MerkleTree.h"
 #include "UOVHash.h"
 
 /*
@@ -92,7 +92,7 @@ MerkleTree newMerkleTree(int depth, int storedLayerDepth, UOVHash_SecretKey *sk)
 	MT.storedLayerDepth = storedLayerDepth;
 	MT.storedLayer = malloc((1 << storedLayerDepth) * KAPPA);
 	writer W = newWriter(MT.storedLayer);
-	for (int i = 0; i < (1 << storedLayerDepth); i++) {
+	for (uint16_t i = 0; i < (1 << storedLayerDepth); i++) {
 		CalculateInternalNode(&MT, sk, storedLayerDepth, i, &W, 0);
 	}
 	return MT;

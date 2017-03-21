@@ -11,7 +11,7 @@
 #include "MerkleTree.h"
 #include "UOVClassic.h"
 
-typedef struct {
+typedef struct UOVHash_SecretKey {
 	unsigned char seed[KAPPA];
 	uint32_t publicseed;
 	Matrix T;
@@ -20,12 +20,12 @@ typedef struct {
 	MerkleTree Tree;
 } UOVHash_SecretKey;
 
-typedef struct {
+typedef struct UOVHash_PublicKey {
 	uint32_t seed;
 	unsigned char merkleRoot[KAPPA];
 } UOVHash_PublicKey;
 
-typedef struct {
+typedef struct UOVHash_Signature {
 	Matrix s;
 	Matrix TP;
 	unsigned char* merklePaths;
