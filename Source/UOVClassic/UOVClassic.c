@@ -213,6 +213,7 @@ void UOVClassic_generateKeyPair(UOVClassic_PublicKey *pk , UOVClassic_SecretKey 
 	}
 
 	csprng rng;
+	csprng_init(&rng);
 	csprng_seed(&rng, 32 , sk->seed);
 
 	sk->T = randomMatrixrng(V, O, &rng);

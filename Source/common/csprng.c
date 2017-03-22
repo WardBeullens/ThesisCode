@@ -119,7 +119,7 @@ uint16_t csprn_next_uint16_t(csprng* rng) {
 		KeccakF1600_StatePermute(rng->state);
 		rng->chars_used = 0;
 	}
-	output = ((uint16_t)rng->state[rng->chars_used]) | (((uint16_t)rng->state[rng->chars_used+1]) << 8) ;
+	output = ((uint16_t)rng->state[rng->chars_used]) | ((uint16_t)(rng->state[rng->chars_used+1] << 8)) ;
 	rng->chars_used += 2;
 	return output;
 }
