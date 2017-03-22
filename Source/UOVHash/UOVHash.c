@@ -77,13 +77,6 @@ void UOVHash_deserialize_PublicKey(reader* R, UOVHash_PublicKey* pk) {
 }
 
 /*
-	Frees the memory allocated by a public key
-*/
-void UOVHash_destroy_PublicKey(UOVHash_PublicKey *pk) {
-	return;
-}
-
-/*
 	Writes a signature to a char array
 
 	W : A writer object
@@ -132,7 +125,7 @@ void UOVHash_generateKeyPair(UOVHash_PublicKey *pk, UOVHash_SecretKey *sk) {
 	pk->seed = rand();
 	sk->publicseed = pk->seed;
 
-	for (int i = 0; i < KAPPA; i++) {
+	for (i = 0; i < KAPPA; i++) {
 		sk->seed[i] = rand();
 	}
 

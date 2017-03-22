@@ -46,9 +46,6 @@ int lexindex(int a, int b);
 
 Matrix subMatrix(Matrix A, int top, int left, int bottom, int right);
 
-Matrix multiplyASubBt(Matrix A, Matrix B, int Btop, int Bleft, int Bbottom, int Bright);
-Matrix multiplyASubB(Matrix A, Matrix B, int Btop, int Bleft, int Bbottom, int Bright);
-
 int equals(Matrix A, Matrix B);
 
 Matrix findSolutionOfUOVSystem(Matrix system, Matrix target, csprng *rng);

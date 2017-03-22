@@ -24,7 +24,7 @@ static f16FELT f64IrredPoly[6] = { 1,2,1,0,1,0 };
 	Converts an integer to a field element
 */
 f64FELT f64IntToFELT(uint64_t a) {
-	return newF64FELT(a, a >> 16, a >> 32 , a >> 48);
+	return newF64FELT((uint16_t)a, (uint16_t)(a >> 16), (uint16_t)(a >> 32) , (uint16_t)(a >> 48));
 }
 
 /*
@@ -48,7 +48,7 @@ f64FELT f64RandomFELT(csprng* rng) {
 f64FELT f64RandomMTFELT(twister* MT) {
 	uint32_t a = randomMT(MT);
 	uint32_t b = randomMT(MT);
-	return newF64FELT(a, a >> 16, b , b>> 16);
+	return newF64FELT((uint16_t)a, (uint16_t)(a >> 16), (uint16_t)b , (uint16_t)(b>> 16));
 }
 
 /*

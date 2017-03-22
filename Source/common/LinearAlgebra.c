@@ -63,7 +63,7 @@ Matrix newMatrix(unsigned int rows, unsigned int cols) {
 	returns : The new matrix
 */
 Matrix zeroMatrix(unsigned int rows, unsigned int cols) {
-	int i, j;
+	unsigned int i, j;
 	Matrix newMat = newMatrix(rows, cols);
 	for (i = 0; i < rows; i++) {
 		for (j = 0; j < cols; j++) {
@@ -171,56 +171,6 @@ Matrix multiplyAB(Matrix A, Matrix B) {
 			for (k = 0; k < A.cols; k++) {
 
 				AB.array[i][j] = add(AB.array[i][j], multiply(A.array[i][k], B.array[k][j]));
-			}
-		}
-	}
-
-	return AB;
-}
-
-/*
-	Multiplies a matrix A with a submatrix of a matrix B
-
-	A,B : Two matrices
-	Btop,Bbottom : The rows defining the top (inclusive) and bottom (exclusive) of a submatrix of B
-	Bleft , Bright : The columns defining the left (inclusive) and right (exclusive) of a submatrix of B
-
-	returns : The product of A with the submatrix of B
-*/
-Matrix multiplyASubB(Matrix A, Matrix B, int Btop, int Bleft, int Bbottom, int Bright) {
-	int i, j, k;
-	Matrix AB = newMatrix(A.rows, Bright - Bleft);
-
-	for (i = 0; i < A.rows; i++) {
-		for (j = 0; j < Bright - Bleft; j++) {
-			AB.array[i][j] = ZERO;
-			for (k = 0; k < A.cols; k++) {
-				AB.array[i][j] = add(AB.array[i][j], multiply(A.array[i][k], B.array[k + Bleft][j + Btop]));
-			}
-		}
-	}
-
-	return AB;
-}
-
-/*
-Multiplies a matrix A with the transpose of a submatrix of a matrix B
-
-A,B : Two matrices
-Btop,Bbottom : The rows defining the top (inclusive) and bottom (exclusive) of a submatrix of B
-Bleft , Bright : The columns defining the left (inclusive) and right (exclusive) of a submatrix of B
-
-returns : The product of A with the transpose of the submatrix of B
-*/
-Matrix multiplyASubBt(Matrix A, Matrix B, int Btop, int Bleft, int Bbottom, int Bright) {
-	int i, j, k;
-	Matrix AB = newMatrix(A.rows, Bbottom - Btop);
-
-	for (i = 0; i < A.rows; i++) {
-		for (j = 0; j < Bbottom - Btop; j++) {
-			AB.array[i][j] = ZERO;
-			for (k = 0; k < A.cols; k++) {
-				AB.array[i][j] = add(AB.array[i][j], multiply(A.array[i][k], B.array[j + Btop][k + Bleft]));
 			}
 		}
 	}

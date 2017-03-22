@@ -41,7 +41,6 @@ void UOVHash_destroy_SecretKey(UOVHash_SecretKey *sk);
 
 void UOVHash_serialize_PublicKey(writer* Buff, UOVHash_PublicKey* pk);
 void UOVHash_deserialize_PublicKey(reader* Buff, UOVHash_PublicKey* pk);
-void UOVHash_destroy_PublicKey(UOVHash_PublicKey *pk);
 
 void UOVHash_serialize_signature(writer *W, UOVHash_Signature *S);
 void UOVHash_deserialize_signature(reader *R, UOVHash_Signature *S);
@@ -63,7 +62,7 @@ void UOVHash_destroy_signature(UOVHash_Signature *S);
 
 #define serialize_PublicKey UOVHash_serialize_PublicKey
 #define deserialize_PublicKey UOVHash_deserialize_PublicKey
-#define destroy_PublicKey UOVHash_destroy_PublicKey
+#define destroy_PublicKey(x)
 
 #define serialize_signature UOVHash_serialize_signature
 #define deserialize_signature UOVHash_deserialize_signature

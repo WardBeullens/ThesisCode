@@ -127,13 +127,12 @@ int main(void)
 	unsigned char *sk = malloc(sizeof(unsigned char[CRYPTO_SECRETKEYBYTES]));
 	unsigned char *sm = malloc(sizeof(unsigned char[59 + CRYPTO_BYTES]));
 	clock_t cl;
-	double dif;
 
 	printf("Public Key takes %.2f kB\n", CRYPTO_PUBLICKEYBYTES / 1024.0);
 	printf("Secret Key takes %.2f kB\n", CRYPTO_SECRETKEYBYTES / 1024.0);
 	printf("Signature takes %.2f kB\n\n", CRYPTO_BYTES / 1024.0);
 
-	srand(time(NULL));
+	srand((unsigned int) time(NULL));
 
 	float genTime = 0.0;
 	float signTime = 0.0;
@@ -149,7 +148,7 @@ int main(void)
 
 		for (j = 0; j < SIGNATURES_PER_KEYPAIR ; j++) {
 			for (k = 0; k < 59; k++) {
-				m[k] = rand();
+				m[k] = ((unsigned char) rand());
 			}
 
 			cl = clock();

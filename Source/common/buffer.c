@@ -92,7 +92,7 @@ writer newWriter(unsigned char* buf) {
 
 	returns : A reader object, initialized to the start of bud
 */
-reader newReader(unsigned char* buf) {
+reader newReader(const unsigned char* buf) {
 	reader R;
 	R.data = buf;
 	R.next = 0;

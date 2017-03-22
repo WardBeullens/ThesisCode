@@ -42,7 +42,7 @@ f32FELT deserialize_f32FELT(reader *R) {
 	Converts an integer to a field element
 */
 f32FELT f32IntToFELT(uint64_t a) {
-	return newF32FELT(a,a>>16);
+	return newF32FELT((uint16_t) a, (uint16_t) (a>>16));
 }
 
 /*
@@ -65,7 +65,7 @@ f32FELT f32RandomFELT(csprng* rng) {
 */
 f32FELT f32RandomMTFELT(twister* MT) {
 	uint32_t a = randomMT(MT);
-	return newF32FELT(a, a >> 16);
+	return newF32FELT((uint16_t) a, (uint16_t) (a >> 16));
 }
 
 /*

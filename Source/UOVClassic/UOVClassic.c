@@ -230,7 +230,7 @@ UOVClassic_Signature UOVClassic_signDocument(UOVClassic_SecretKey sk, const unsi
 	csprng_init(&rng2);
 	csprng_seed(&rng, len, document);
 
-	unsigned char randchar = rand();
+	unsigned char randchar = ((unsigned char) rand());
 	csprng_seed(&rng2, len, document);
 	csprng_seed(&rng2, 1, &randchar);
 

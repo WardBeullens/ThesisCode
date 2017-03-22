@@ -25,7 +25,7 @@ static f16FELT f80IrredPoly[6] = { 1,0,1,0,0,1 };
 	Converts an integer to a field element
 */
 f80FELT f80IntToFELT(uint64_t a) {
-	return newF80FELT(a, a >> 16, a >> 32, a >> 48 , 0);
+	return newF80FELT((uint16_t)a, (uint16_t)(a >> 16), (uint16_t)(a >> 32), (uint16_t)(a >> 48) , 0);
 }
 
 /*
@@ -50,7 +50,7 @@ f80FELT f80RandomMTFELT(twister* MT) {
 	uint32_t a = randomMT(MT);
 	uint32_t b = randomMT(MT);
 	uint32_t c = randomMT(MT);
-	return newF80FELT(a, a >> 16, b , b>>16 , c);
+	return newF80FELT((uint16_t)a, (uint16_t)(a >> 16), (uint16_t)b , (uint16_t)(b>>16) , (uint16_t)c);
 }
 
 /*

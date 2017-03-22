@@ -133,7 +133,7 @@ uint16_t csprn_next_uint16_t(csprng* rng) {
 */
 void csprng_seed_uint64_t(csprng* rng, uint64_t seed) {
 	unsigned char s[8];
-	writer W = newWriter(&s);
+	writer W = newWriter(s);
 
 	csprng_init(rng);
 	serialize_uint64_t(&W, seed, 64);

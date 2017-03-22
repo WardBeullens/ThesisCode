@@ -50,7 +50,7 @@ static f16FELT f48IrredPoly[6] = { 1,1,0,1,0,0 };
 	Converts an integer to a field element
 */
 f48FELT f48IntToFELT(uint64_t a) {
-	return newF48FELT(a, a >> 16 , a>>32);
+	return newF48FELT((uint16_t)a, (uint16_t)(a >> 16) , (uint16_t)(a>>32));
 }
 
 /*
@@ -74,7 +74,7 @@ f48FELT f48RandomFELT(csprng* rng) {
 f48FELT f48RandomMTFELT(twister* MT) {
 	uint32_t a = randomMT(MT);
 	uint32_t b = randomMT(MT);
-	return newF48FELT(a, a >> 16,b);
+	return newF48FELT((f16FELT)a, (f16FELT)(a >> 16), (f16FELT)b);
 }
 
 /*

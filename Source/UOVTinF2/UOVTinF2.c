@@ -303,26 +303,6 @@ void BuildAugmentedMatrixTinF2(Matrix A, Matrix signature, Matrix target, bitcon
 	}
 }
 
-int Try2(Matrix B, Matrix signature) {
-	int i;
-	Matrix A = copy(B);
-
-	/* Solving linear system */
-	Matrix x = getSolution(A);
-
-	if (x.cols != 0) {
-		for (i = 0; i < O; i++) {
-			signature.array[i + signature.rows - O][0] = x.array[i][0];
-		}
-
-		destroy(x);
-		destroy(A);
-		return 1;
-	}
-	destroy(A);
-	return 0;
-}
-
 /*
 	Finds a solution to a UOVSystem
 
