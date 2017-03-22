@@ -126,7 +126,7 @@ void UOVHash_generateKeyPair(UOVHash_PublicKey *pk, UOVHash_SecretKey *sk) {
 	sk->publicseed = pk->seed;
 
 	for (i = 0; i < KAPPA; i++) {
-		sk->seed[i] = rand();
+		sk->seed[i] = ((unsigned char) rand());
 	}
 
 	csprng rng;
@@ -168,9 +168,8 @@ UOVHash_Signature UOVHash_signDocument(UOVHash_SecretKey sk, const unsigned char
 
 	/* find solution of private system */
 	csprng_init(&rng);
-	unsigned char randchar = rand();
 	csprng_seed(&rng, len, document);
-	csprng_seed(&rng, 1, &randchar);
+	csprng_seed(&rng, KAPPA , sk.seed);
 	sig.s = findSolutionOfUOVSystem(sk.Q, hash, &rng);
 
 	/* convert to solution of public system */
@@ -200,7 +199,7 @@ UOVHash_Signature UOVHash_signDocument(UOVHash_SecretKey sk, const unsigned char
 	sig.merklePaths = malloc(THETA*(KAPPA*TAU + M * sizeof(FELT)));
 	reader R = newReader(challenges);
 	writer W = newWriter(sig.merklePaths);
-	for (int i = 0; i < THETA; i++) {
+	for (i = 0; i < THETA; i++) {
 		uint16_t c = ((uint16_t) deserialize_uint64_t(&R, TAU));
 		OpenMerkleTreePath(&sk.Tree, &sk, c, &W);
 	}
@@ -291,7 +290,7 @@ int UOVHash_verify(UOVHash_PublicKey* pk, UOVHash_Signature* signature, unsigned
 		Matrix Tcheck;
 
 		/* checking if leaves are valid */
-		for (int i = 0; i < THETA; i++) {
+		for (i = 0; i < THETA; i++) {
 			if (valid != 0) {
 				break;
 			}

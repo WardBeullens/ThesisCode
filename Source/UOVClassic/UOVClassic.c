@@ -7,6 +7,11 @@
 	sk : a secret key
 */
 void UOVClassic_serialize_SecretKey(writer *W, UOVClassic_SecretKey *sk) {
+	int i;
+	for (i = 0; i < 32; i++) {
+		W->data[i] = sk->seed[i];
+	}
+	W->next += 32;
 	serialize_matrix(W, sk->T);
 	serialize_matrix(W, sk->Q);
 }
@@ -18,6 +23,11 @@ void UOVClassic_serialize_SecretKey(writer *W, UOVClassic_SecretKey *sk) {
 	sk : receives the secret key
 */
 void UOVClassic_deserialize_SecretKey(reader *R, UOVClassic_SecretKey *sk) {
+	int i;
+	for (i = 0; i < 32; i++) {
+		sk->seed[i] = R->data[i];
+	}
+	R->next += 32;
 	sk->T = newMatrix(V, O);
 	deserialize_matrix(R, sk->T);
 	sk->Q = newMatrix(D, M);
@@ -198,8 +208,12 @@ void UOVClassic_generateKeyPair(UOVClassic_PublicKey *pk , UOVClassic_SecretKey 
 	int i;
 	pk->seed = rand();
 
+	for (i = 0; i < 32; i++) {
+		sk->seed[i] = ((unsigned char)rand());
+	}
+
 	csprng rng;
-	csprng_seed_uint64_t(&rng, rand());
+	csprng_seed(&rng, 32 , sk->seed);
 
 	sk->T = randomMatrixrng(V, O, &rng);
 	for (i = 0; i < O; i++) {
@@ -230,9 +244,8 @@ UOVClassic_Signature UOVClassic_signDocument(UOVClassic_SecretKey sk, const unsi
 	csprng_init(&rng2);
 	csprng_seed(&rng, len, document);
 
-	unsigned char randchar = ((unsigned char) rand());
 	csprng_seed(&rng2, len, document);
-	csprng_seed(&rng2, 1, &randchar);
+	csprng_seed(&rng2, 32 , sk.seed);
 
 	hash = randomMatrixrng(M, 1, &rng);
 

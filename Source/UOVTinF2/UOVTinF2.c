@@ -32,7 +32,7 @@ void UOVTINF2_deserialize_SecretKey(reader *R, UOVTINF2_SecretKey *sk) {
 		sk->privateseed[i] = R->data[i];
 	}
 	R->next += 32;
-	sk->publicseed = deserialize_uint64_t(R, 32);
+	sk->publicseed = ((uint32_t) deserialize_uint64_t(R, 32));
 
 	sk->Q = malloc(D * sizeof(bitcontainer));
 
@@ -72,7 +72,7 @@ void UOVTINF2_serialize_PublicKey(writer* W, UOVTINF2_PublicKey* pk) {
 */
 void UOVTINF2_deserialize_PublicKey(reader* R, UOVTINF2_PublicKey* pk) {
 	int i;
-	pk->seed = deserialize_uint64_t(R, 32);
+	pk->seed = ((uint32_t) deserialize_uint64_t(R, 32));
 	pk->B2 = malloc(sizeof(bitcontainer)*D2);
 	for (i = 0; i < D2; i++) {
 		pk->B2[i] = deserialize_bitcontainer(R);
@@ -251,7 +251,7 @@ void UOVTINF2_calculateB2(UOVTINF2_SecretKey *sk , UOVTINF2_PublicKey *pk) {
 void UOVTINF2_generateKeyPair(UOVTINF2_PublicKey *pk, UOVTINF2_SecretKey *sk) {
 	int i;
 	for (i = 0; i < 32; i++) {
-		sk->privateseed[i] = rand();
+		sk->privateseed[i] = ((unsigned char) rand());
 	}
 	
 	sk->Q = malloc(D * sizeof(bitcontainer));
@@ -350,7 +350,6 @@ Matrix solveUOVSystem(UOVTINF2_SecretKey sk, Matrix hash , csprng *rng) {
 */
 UOVTINF2_Signature UOVTINF2_signDocument(UOVTINF2_SecretKey sk,const unsigned char *document , uint64_t len) {
 	int i, j;
-	unsigned char randchar;
 	Matrix hash;
 	UOVTINF2_Signature signature;
 	csprng rng , rng2;
@@ -358,9 +357,8 @@ UOVTINF2_Signature UOVTINF2_signDocument(UOVTINF2_SecretKey sk,const unsigned ch
 	csprng_init(&rng2);
 	csprng_seed(&rng, len, document);
 
-	randchar = rand();
 	csprng_seed(&rng2, len, document);
-	csprng_seed(&rng2, 1 , &randchar );
+	csprng_seed(&rng2, 32 , sk.privateseed );
 	
 	hash = randomMatrixrng(M, 1, &rng);
 	signature.s = solveUOVSystem(sk, hash, &rng2);

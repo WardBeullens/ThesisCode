@@ -16,6 +16,7 @@
 
 /* Secret key */
 typedef struct {
+	unsigned char seed[32];
 	Matrix T;
 	Matrix Q;
 } UOVClassic_SecretKey;
