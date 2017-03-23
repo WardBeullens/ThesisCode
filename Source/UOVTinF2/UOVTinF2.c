@@ -312,6 +312,7 @@ void BuildAugmentedMatrixTinF2(Matrix A, Matrix signature, Matrix target, bitcon
 	returns : A N-by-1 matrix containing a solution 
 */
 Matrix solveUOVSystem(UOVTINF2_SecretKey sk, Matrix hash , csprng *rng) {
+	int i;
 	Matrix signature;
 	Matrix A;
 	Matrix x;
@@ -331,7 +332,7 @@ Matrix solveUOVSystem(UOVTINF2_SecretKey sk, Matrix hash , csprng *rng) {
 			destroy(signature);
 		}
 	}
-	for (int i = 0; i < O; i++) {
+	for (i = 0; i < O; i++) {
 		signature.array[i + signature.rows - O][0] = x.array[i][0];
 	}
 	destroy(x);

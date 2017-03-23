@@ -47,6 +47,7 @@ void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
 	useStored : whether to use the stored values to speed up the process or not. (Always use this except when computing the values that have to be stored themselves)
 */
 void CalculateInternalNode(MerkleTree* Tree, UOVHash_SecretKey *sk, int depth, uint16_t node, writer* W, int useStored) {
+	int i;
 	if (depth == Tree->depth) {
 		unsigned char serEval[M * sizeof(FELT)];
 		writer evalW = newWriter(serEval);
@@ -59,7 +60,7 @@ void CalculateInternalNode(MerkleTree* Tree, UOVHash_SecretKey *sk, int depth, u
 		return;
 	}
 	if (useStored == 1 && depth == Tree->storedLayerDepth) {
-		for (int i = 0; i < KAPPA; i++) {
+		for (i = 0; i < KAPPA; i++) {
 			W->data[W->next + i] = Tree->storedLayer[node*KAPPA + i];
 		}
 		W->next += KAPPA;
@@ -87,12 +88,13 @@ void CalculateInternalNode(MerkleTree* Tree, UOVHash_SecretKey *sk, int depth, u
 	returns : the new merkle tree
 */
 MerkleTree newMerkleTree(int depth, int storedLayerDepth, UOVHash_SecretKey *sk) {
+	uint16_t i;
 	MerkleTree MT;
 	MT.depth = depth;
 	MT.storedLayerDepth = storedLayerDepth;
 	MT.storedLayer = malloc((1 << storedLayerDepth) * KAPPA);
 	writer W = newWriter(MT.storedLayer);
-	for (uint16_t i = 0; i < (1 << storedLayerDepth); i++) {
+	for (i = 0; i < (1 << storedLayerDepth); i++) {
 		CalculateInternalNode(&MT, sk, storedLayerDepth, i, &W, 0);
 	}
 	return MT;
@@ -112,7 +114,8 @@ void destroy_MerkleTree(MerkleTree* Tree) {
 	W : the writer object
 */
 void serialize_merkleTree(MerkleTree* Tree, writer* W) {
-	for (int i = 0; i < (1 << Tree->storedLayerDepth)*KAPPA; i++) {
+	int i;
+	for (i = 0; i < (1 << Tree->storedLayerDepth)*KAPPA; i++) {
 		W->data[i + W->next] = Tree->storedLayer[i];
 	}
 	W->next += (1 << Tree->storedLayerDepth)*KAPPA;
@@ -127,10 +130,11 @@ void serialize_merkleTree(MerkleTree* Tree, writer* W) {
 */
 MerkleTree deserialize_merkleTree(int depth, int storedLayerDepth, reader* R) {
 	MerkleTree Tree;
+	int i;
 	Tree.depth = depth;
 	Tree.storedLayerDepth = storedLayerDepth;
 	Tree.storedLayer = malloc((1 << storedLayerDepth)*KAPPA);
-	for (int i = 0; i < (1 << storedLayerDepth)*KAPPA; i++) {
+	for (i = 0; i < (1 << storedLayerDepth)*KAPPA; i++) {
 		Tree.storedLayer[i] = R->data[i + R->next];
 	}
 	R->next += (1 << storedLayerDepth)*KAPPA;
@@ -157,8 +161,9 @@ void getRoot(MerkleTree* Tree, UOVHash_SecretKey *sk, writer* W) {
 	W : a writer object to write the path to
 */
 void OpenMerkleTreePath(MerkleTree* Tree, UOVHash_SecretKey* sk, uint16_t a, writer* W) {
+	int i;
 	calculateLeaf(sk, a, W);
-	for (int i = Tree->depth; i > 0; i--) {
+	for (i = Tree->depth; i > 0; i--) {
 		a ^= 1;
 		CalculateInternalNode(Tree, sk, i, a, W, 1);
 		a >>= 1;
@@ -173,6 +178,7 @@ void OpenMerkleTreePath(MerkleTree* Tree, UOVHash_SecretKey* sk, uint16_t a, wri
 	R : a reader object
 */
 int VerifyMerkleTreePath(uint64_t c, unsigned char* root, reader* R) {
+	int depth, i;
 	unsigned char leaf[M * sizeof(FELT)];
 	unsigned char buf[2 * KAPPA];
 	memcpy(leaf, R->data + R->next, M * sizeof(FELT));
@@ -180,7 +186,7 @@ int VerifyMerkleTreePath(uint64_t c, unsigned char* root, reader* R) {
 	csprng rng;
 	csprng_init(&rng);
 	csprng_seed(&rng, M * sizeof(FELT), leaf);
-	for (int depth = TAU; depth > 0; depth--) {
+	for (depth = TAU; depth > 0; depth--) {
 		if ((c & 1) == 0) {
 			csprng_generate(&rng, KAPPA, buf);
 			memcpy(buf + KAPPA, R->data + R->next, KAPPA);
@@ -197,7 +203,7 @@ int VerifyMerkleTreePath(uint64_t c, unsigned char* root, reader* R) {
 		c /= 2;
 	}
 	csprng_generate(&rng, KAPPA, buf);
-	for (int i = 0; i < KAPPA; i++) {
+	for (i = 0; i < KAPPA; i++) {
 		if (buf[i] != root[i]) {
 			return 0;
 		}
