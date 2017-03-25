@@ -62,25 +62,29 @@ int csprng_seed(csprng* rng, uint64_t seed_length, const unsigned char * seed)
 *  * buffer : the memory address to store the desired random bytes
 *    to
 */
-int csprng_generate(csprng* rng, uint64_t buffer_length, unsigned char * buffer)
+int csprng_generate(csprng* rng, uint64_t buffer_length, writer *W)
 {
 	unsigned short int i, j;
+	if (W->bitsUsed != 0) {
+		W->bitsUsed = 0;
+		W->next++;
+	}
 
 	/* squeeze out all the full output blocks */
 	for (i = 0; i < buffer_length / csprng_gen_rate; ++i)
 	{
 		for (j = 0; j < csprng_gen_rate; ++j)
 		{
-			buffer[i*csprng_gen_rate + j] = rng->state[j];
+			W->data[W->next + i*csprng_gen_rate + j] = rng->state[j];
 		}
 		KeccakF1600_StatePermute(rng->state);
 	}
 	/* squeeze out the remaining bytes of the last output block */
 	for (j = 0; j < buffer_length % csprng_gen_rate; ++j)
 	{
-		buffer[i*csprng_gen_rate + j] = rng->state[j];
+		W->data[W->next + i*csprng_gen_rate + j] = rng->state[j];
 	}
-	/*KeccakF1600_StatePermute(rng->state);*/
+	W->next += buffer_length;
 
 	return 1;
 }

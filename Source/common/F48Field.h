@@ -33,7 +33,7 @@ f48FELT deserialize_f48FELT(reader *R);
 
 
 #ifdef F48
-#include "F48Field.h"
+#define BITS_PER_FELT 48
 #define FELT f48FELT
 #define intToFELT f48IntToFELT
 #define serialize_FELT serialize_f48FELT

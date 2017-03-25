@@ -152,6 +152,7 @@
     <ClCompile Include="..\Source\common\Keccak-readable-and-compact-c89.c" />
     <ClCompile Include="..\Source\common\LinearAlgebra.c" />
     <ClCompile Include="..\Source\common\main.c" />
+    <ClCompile Include="..\Source\common\PrimeField.c" />
     <ClCompile Include="..\Source\common\twister.c" />
     <ClCompile Include="..\Source\UOVClassic\UOVClassic.c" />
     <ClCompile Include="..\Source\UOVHash\MerkleTree.c" />
@@ -170,6 +171,7 @@
     <ClInclude Include="..\Source\common\F80Field.h" />
     <ClInclude Include="..\Source\common\parameters.h" />
     <ClInclude Include="..\Source\common\LinearAlgebra.h" />
+    <ClInclude Include="..\Source\common\PrimeField.h" />
     <ClInclude Include="..\Source\common\twister.h" />
     <ClInclude Include="..\Source\UOVClassic\UOVClassicApi.h" />
     <ClInclude Include="..\Source\UOVClassic\UOVClassicParameters.h" />

@@ -4,6 +4,7 @@
 #include "csprng.h"
 #include "twister.h"
 
+#include "PrimeField.h"
 #include "F16Field.h"
 #include "F32Field.h"
 #include "F48Field.h"

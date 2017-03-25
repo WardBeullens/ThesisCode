@@ -473,21 +473,21 @@ void BuildAugmentedMatrix(Matrix A, Matrix signature, Matrix target, Matrix syst
 Matrix findSolutionOfUOVSystem(Matrix system, Matrix target, csprng *rng) {
 	int i;
 	Matrix signature;
-	int tries = 0;
 
-	Matrix A = zeroMatrix(M, O + 1);
+	Matrix A;
 	Matrix x;
 	x.cols = 0;
 	while (x.cols == 0) {
-		tries++;
 		signature = randomMatrixrng(N, 1, rng);
 		signature.array[0][0] = ONE;
 
+		A = zeroMatrix(M, O + 1);
 		BuildAugmentedMatrix(A, signature, target, system);
 		x = getSolution(A);
-
+		
 		if (x.cols == 0) {
 			destroy(signature);
+			destroy(A);
 		}
 	}
 	for (i = 0; i < O; i++) {

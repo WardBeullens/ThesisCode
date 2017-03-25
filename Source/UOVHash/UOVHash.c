@@ -7,11 +7,8 @@
 	sk : a secret key
 */
 void UOVHash_serialize_SecretKey(writer *W, UOVHash_SecretKey *sk) {
-	int i;
-	for (i = 0; i < KAPPA; i++) {
-		W->data[i] = sk->seed[i];
-	}
-	W->next += KAPPA;
+	reader R = newReader(sk->seed);
+	transcribe(W, &R, KAPPA);
 	serialize_uint64_t(W, sk->publicseed, 32);
 	serialize_merkleTree(&sk->Tree , W);
 }
@@ -24,10 +21,8 @@ void UOVHash_serialize_SecretKey(writer *W, UOVHash_SecretKey *sk) {
 */
 void UOVHash_deserialize_SecretKey(reader *R, UOVHash_SecretKey *sk) {
 	int i;
-	for (i = 0; i < KAPPA; i++) {
-		sk->seed[i] = R->data[i];
-	}
-	R->next += KAPPA;
+	writer W = newWriter(sk->seed);
+	transcribe(&W, R, KAPPA);
 	sk->publicseed = ((uint32_t) deserialize_uint64_t(R, 32));
 	csprng rng;
 	csprng_init(&rng);
@@ -60,8 +55,8 @@ void UOVHash_destroy_SecretKey(UOVHash_SecretKey *sk) {
 */
 void UOVHash_serialize_PublicKey(writer* W, UOVHash_PublicKey* pk) {
 	serialize_uint64_t(W, pk->seed, 32);
-	memcpy(W->data + W->next, pk->merkleRoot, KAPPA);
-	W->next += KAPPA;
+	reader R = newReader(pk->merkleRoot);
+	transcribe(W, &R, KAPPA);
 }
 
 /*
@@ -72,8 +67,8 @@ void UOVHash_serialize_PublicKey(writer* W, UOVHash_PublicKey* pk) {
 */
 void UOVHash_deserialize_PublicKey(reader* R, UOVHash_PublicKey* pk) {
 	pk->seed = ((uint32_t) deserialize_uint64_t(R, 32));
-	memcpy(pk->merkleRoot, R->data + R->next, KAPPA);
-	R->next += KAPPA;
+	writer W = newWriter(pk->merkleRoot);
+	transcribe(&W, R, KAPPA);
 }
 
 /*
@@ -83,10 +78,10 @@ void UOVHash_deserialize_PublicKey(reader* R, UOVHash_PublicKey* pk) {
 	S : the signature
 */
 void UOVHash_serialize_signature(writer* W, UOVHash_Signature* S) {
+	reader R = newReader(S->merklePaths);
 	serialize_matrix(W, S->s);
 	serialize_matrix(W, S->TP);
-	memcpy(W->data + W->next, S->merklePaths, (THETA*(KAPPA*TAU + M * sizeof(FELT))));
-	W->next += (THETA*(KAPPA*TAU + M * sizeof(FELT)));
+	transcribe(W, &R , MERKLE_PATHS_SIZE);
 }
 
 /*
@@ -96,13 +91,15 @@ void UOVHash_serialize_signature(writer* W, UOVHash_Signature* S) {
 	S : receives the signature
 */
 void UOVHash_deserialize_signature(reader* R, UOVHash_Signature* S) {
+	writer W;
 	S->s = newMatrix(N, 1);
 	S->TP = newMatrix(D2, ALPHA);
 	deserialize_matrix(R, S->s);
 	deserialize_matrix(R, S->TP);
+
 	S->merklePaths = malloc((THETA*(KAPPA*TAU + M * sizeof(FELT))));
-	memcpy(S->merklePaths, R->data + R->next, (THETA*(KAPPA*TAU + M * sizeof(FELT))));
-	R->next += (THETA*(KAPPA*TAU + M * sizeof(FELT)));
+	W = newWriter(S->merklePaths);
+	transcribe(&W, R, MERKLE_PATHS_SIZE);
 }
 
 /*
@@ -160,6 +157,7 @@ UOVHash_Signature UOVHash_signDocument(UOVHash_SecretKey sk, const unsigned char
 	Matrix hash,T;
 	UOVHash_Signature sig;
 	csprng rng;
+	writer W;
 
 	/* calculate hash of document */
 	csprng_init(&rng);
@@ -194,11 +192,12 @@ UOVHash_Signature UOVHash_signDocument(UOVHash_SecretKey sk, const unsigned char
 	csprng_seed_matrix(&rng, sig.TP);
 
 	unsigned char challenges[THETA * 4];
-	csprng_generate(&rng, THETA * 4, challenges);
+	W = newWriter(challenges);
+	csprng_generate(&rng, THETA * 4, &W);
 
 	sig.merklePaths = malloc(THETA*(KAPPA*TAU + M * sizeof(FELT)));
 	reader R = newReader(challenges);
-	writer W = newWriter(sig.merklePaths);
+	W = newWriter(sig.merklePaths);
 	for (i = 0; i < THETA; i++) {
 		uint16_t c = ((uint16_t) deserialize_uint64_t(&R, TAU));
 		OpenMerkleTreePath(&sk.Tree, &sk, c, &W);
@@ -219,8 +218,10 @@ UOVHash_Signature UOVHash_signDocument(UOVHash_SecretKey sk, const unsigned char
 */
 int UOVHash_verify(UOVHash_PublicKey* pk, UOVHash_Signature* signature, unsigned char* document, uint64_t len) {
 	int i, j, k;
+	uint64_t resetnext;
 	int valid = 0;
 	FELT temp;
+	writer W;
 
 	Matrix hash , T , Thash;
 	csprng rng;
@@ -283,7 +284,8 @@ int UOVHash_verify(UOVHash_PublicKey* pk, UOVHash_Signature* signature, unsigned
 		csprng_seed_matrix(&rng, signature->s);
 		csprng_seed_matrix(&rng, signature->TP);
 		unsigned char challenges[THETA * 4];
-		csprng_generate(&rng, THETA * 4, challenges);
+		W = newWriter(challenges);
+		csprng_generate(&rng, THETA * 4, &W);
 		reader ChallengeReader = newReader(challenges);
 		reader R = newReader(signature->merklePaths);
 		Matrix check;
@@ -299,8 +301,10 @@ int UOVHash_verify(UOVHash_PublicKey* pk, UOVHash_Signature* signature, unsigned
 
 			/* check whether the mac value is valid */
 			check = newMatrix(M, 1);
+			resetnext = R.next;
 			deserialize_matrix(&R, check);
-			R.next -= M * sizeof(FELT);
+			R.next = resetnext;
+			R.bitsUsed = 0;
 			Tcheck = multiplyAtB(T, check);
 
 			evaluation = zeroMatrix(ALPHA, 1);

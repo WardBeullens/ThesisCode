@@ -33,7 +33,7 @@ f80FELT deserialize_f80FELT(reader *R);
 void f80AddBtoA(f80FELT *A, const f80FELT *B);
 
 #ifdef F80
-#include "F80Field.h"
+#define BITS_PER_FELT 80
 #define FELT f80FELT
 #define intToFELT f80IntToFELT
 #define serialize_FELT serialize_f80FELT

@@ -38,6 +38,7 @@ Given polynomials a and b this calculates the gcd of a and b and polynomials x a
 void f16ExtendedEuclideanAlgorithm(f16FELT *a, f16FELT *b, f16FELT *x, f16FELT *y, f16FELT *gcd);
 
 #ifdef F16
+#define BITS_PER_FELT 16
 #define FELT f16FELT
 #define intToFELT(x) (x)
 #define serialize_FELT serialize_f16FELT

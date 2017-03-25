@@ -17,7 +17,7 @@ typedef struct
 
 int csprng_init(csprng* rng);
 int csprng_seed(csprng* rng, uint64_t seed_length, const unsigned char * seed);
-int csprng_generate(csprng* rng, uint64_t buffer_length, unsigned char * buffer);
+int csprng_generate(csprng* rng, uint64_t buffer_length, writer *W);
 
 void csprng_seed_uint64_t(csprng* rng, uint64_t seed);
 

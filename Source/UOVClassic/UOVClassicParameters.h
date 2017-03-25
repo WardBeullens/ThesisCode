@@ -9,8 +9,13 @@
 */
 
 /* 100-bit */
+#define PRIME_FIELD
+#define FIELDPRIME 127
+enum { M = 39 }; 
+
+/* 100-bit 
 #define F32
-enum { M = 29 };
+enum { M = 29 };*/
 
 /* 128-bit : q = 2^48 
 #define F48

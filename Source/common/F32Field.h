@@ -31,7 +31,7 @@ void serialize_f32FELT(writer *W, f32FELT a);
 f32FELT deserialize_f32FELT(reader *R);
 
 #ifdef F32
-#include "F32Field.h"
+#define BITS_PER_FELT 32
 #define FELT f32FELT
 #define intToFELT f32IntToFELT
 #define serialize_FELT serialize_f32FELT

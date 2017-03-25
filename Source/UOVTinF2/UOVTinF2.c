@@ -11,12 +11,8 @@ void randomizeArrayMT(bitcontainer *arr, int size, uint32_t seed);
 	sk : a secret key
 */
 void UOVTINF2_serialize_SecretKey(writer *W, UOVTINF2_SecretKey *sk) {
-	int i;
-	for (i = 0; i < 32; i++) {
-		W->data[i] = sk->privateseed[i];
-	}
-	W->next += 32;
-	W->bitsUsed = 0;
+	reader R = newReader(sk->privateseed);
+	transcribe(W, &R, 32);
 	serialize_uint64_t(W, sk->publicseed, 32);
 }
 
@@ -27,11 +23,8 @@ void UOVTINF2_serialize_SecretKey(writer *W, UOVTINF2_SecretKey *sk) {
 	sk : receives the secret key
 */
 void UOVTINF2_deserialize_SecretKey(reader *R, UOVTINF2_SecretKey *sk) {
-	int i;
-	for (i = 0; i < 32; i++) {
-		sk->privateseed[i] = R->data[i];
-	}
-	R->next += 32;
+	writer W = newWriter(sk->privateseed);
+	transcribe(&W, R, 32);
 	sk->publicseed = ((uint32_t) deserialize_uint64_t(R, 32));
 
 	sk->Q = malloc(D * sizeof(bitcontainer));
@@ -351,6 +344,7 @@ Matrix solveUOVSystem(UOVTINF2_SecretKey sk, Matrix hash , csprng *rng) {
 */
 UOVTINF2_Signature UOVTINF2_signDocument(UOVTINF2_SecretKey sk,const unsigned char *document , uint64_t len) {
 	int i, j;
+	FELT temp;
 	Matrix hash;
 	UOVTINF2_Signature signature;
 	csprng rng , rng2;
@@ -367,7 +361,8 @@ UOVTINF2_Signature UOVTINF2_signDocument(UOVTINF2_SecretKey sk,const unsigned ch
 	for (i = 0; i < V; i++) {
 		for (j = 0; j < O; j++) {
 			if ( getBit(sk.T[i] , j )) {
-				addBtoA(&signature.s.array[i][0], &minus(signature.s.array[V + j][0]));
+				temp = minus(signature.s.array[V + j][0]);
+				addBtoA(&signature.s.array[i][0], &temp);
 			}
 		}
 	}

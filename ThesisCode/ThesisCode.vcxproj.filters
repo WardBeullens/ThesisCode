@@ -87,6 +87,9 @@
     <ClCompile Include="..\Source\UOVTinF2\128Bitcontainer.c">
       <Filter>Source Files\UOVTinF2</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\common\PrimeField.c">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\common\buffer.h">
@@ -154,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\UOVTinF2\UOVTinF2.h">
       <Filter>Header Files\UOVTinF2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\common\PrimeField.h">
+      <Filter>Header Files\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

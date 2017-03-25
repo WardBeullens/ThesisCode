@@ -1,3 +1,5 @@
+#define DIVIDE_AND_ROUND_UP(N, S) (((N) + (S) - 1) / (S))
+
 #ifdef UOVHASH
 
 #ifndef UOVHASHPARAMETERS_H
@@ -12,9 +14,14 @@
 	and THETA , the number of MAC tests included in the signature
 */
 
-/* 100-bit */
+/* test */
+#define PRIME_FIELD
+#define FIELDPRIME 127
+enum { M = 29, ALPHA = 3, TAU = 4, KAPPA = 13, THETA = 14 };
+
+/* 100-bit 
 #define F32
-enum { M = 29, ALPHA = 3, TAU = 16, KAPPA = 13, THETA = 14 }; 
+enum { M = 29, ALPHA = 3, TAU = 16, KAPPA = 13, THETA = 14 }; */
 
 /* 128-bit 
 #define F48
@@ -29,11 +36,13 @@ enum { M = 52, ALPHA = 3 , TAU = 16 , KAPPA = 24 , THETA = 35}; */
 enum { M = 68, ALPHA = 3 , TAU = 16 , KAPPA = 32 , THETA = 53 }; */
 
 /*derived parameters */
+
 enum { O = M };
 enum { V = 2 * O + 1 };
 enum { N = O + V };
 enum { D = V*(V + 1) / 2 + O*V };
 enum { D2 = O*(O + 1) / 2 };
+#define MERKLE_PATHS_SIZE (THETA*(KAPPA*TAU + DIVIDE_AND_ROUND_UP(M *BITS_PER_FELT ,8)))   /* Number of bytes it takes to encode merkle paths */
 
 #endif
 
@@ -42,4 +51,5 @@ enum { D2 = O*(O + 1) / 2 };
 #define TAU 1
 #define KAPPA 1
 #define THETA 1
+#define MERKLE_PATHS_SIZE 1 
 #endif

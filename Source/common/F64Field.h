@@ -33,7 +33,7 @@ f64FELT deserialize_f64FELT(reader *R);
 void f64AddBtoA(f64FELT *A, const f64FELT *B);
 
 #ifdef F64
-#include "F64Field.h"
+#define BITS_PER_FELT 64
 #define FELT f64FELT
 #define intToFELT f64IntToFELT
 #define serialize_FELT serialize_f64FELT

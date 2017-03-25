@@ -7,11 +7,8 @@
 	sk : a secret key
 */
 void UOVClassic_serialize_SecretKey(writer *W, UOVClassic_SecretKey *sk) {
-	int i;
-	for (i = 0; i < 32; i++) {
-		W->data[i] = sk->seed[i];
-	}
-	W->next += 32;
+	reader R = newReader(sk->seed);
+	transcribe(W, &R, 32);
 	serialize_matrix(W, sk->T);
 	serialize_matrix(W, sk->Q);
 }
@@ -23,11 +20,8 @@ void UOVClassic_serialize_SecretKey(writer *W, UOVClassic_SecretKey *sk) {
 	sk : receives the secret key
 */
 void UOVClassic_deserialize_SecretKey(reader *R, UOVClassic_SecretKey *sk) {
-	int i;
-	for (i = 0; i < 32; i++) {
-		sk->seed[i] = R->data[i];
-	}
-	R->next += 32;
+	writer W = newWriter(sk->seed);
+	transcribe(&W, R, 32);
 	sk->T = newMatrix(V, O);
 	deserialize_matrix(R, sk->T);
 	sk->Q = newMatrix(D, M);

@@ -99,3 +99,18 @@ reader newReader(const unsigned char* buf) {
 	R.bitsUsed = 0;
 	return R;
 }
+
+
+void transcribe(writer *W, reader *R, int bytes) {
+	if (W->bitsUsed != 0) {
+		W->bitsUsed = 0;
+		W->next++;
+	}
+	if (R->bitsUsed != 0) {
+		R->bitsUsed = 0;
+		R->next++;
+	}
+	memcpy(W->data + W->next, R->data + R->next, bytes);
+	W->next += bytes;
+	R->next += bytes;
+}

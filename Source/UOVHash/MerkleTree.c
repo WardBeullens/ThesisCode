@@ -8,6 +8,7 @@
 	leaf : the index of the leaf
 	W : writer object to which the leaf value is written
 */
+#ifdef scalarMultiply
 void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
 	uint64_t k;
 	int j;
@@ -35,7 +36,35 @@ void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
 		serialize_FELT(W, evaluation[j]);
 	}
 }
+#else
+void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
+	uint64_t k;
+	int j;
 
+	FELT evaluation[M];
+
+	for (j = 0; j < M; j++) {
+		evaluation[j] = ZERO;
+	}
+	if (leaf == 0) {
+		for (k = 0; k < M; k++) {
+			evaluation[k] = sk->B2.array[0][k];
+		}
+	}
+	else {
+		FELT x = intToFELT(leaf);
+		for (j = D2 - 1; j >= 0; j--) {
+			for (k = 0; k < M; k++) {
+				evaluation[k] = multiply(evaluation[k], x);
+				addBtoA(&evaluation[k], &sk->B2.array[j][k]);
+			}
+		}
+	}
+	for (j = 0; j < M; j++) {
+		serialize_FELT(W, evaluation[j]);
+	}
+}
+#endif
 /*
 	Calculates the hash-value corresponding to an internal node of the merkle tree
 
@@ -47,23 +76,20 @@ void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
 	useStored : whether to use the stored values to speed up the process or not. (Always use this except when computing the values that have to be stored themselves)
 */
 void CalculateInternalNode(MerkleTree* Tree, UOVHash_SecretKey *sk, int depth, uint16_t node, writer* W, int useStored) {
-	int i;
 	if (depth == Tree->depth) {
-		unsigned char serEval[M * sizeof(FELT)];
+		unsigned char serEval[DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8)];
 		writer evalW = newWriter(serEval);
 		calculateLeaf(sk, node, &evalW);
 		csprng rng;
 		csprng_init(&rng);
-		csprng_seed(&rng, M * sizeof(FELT), serEval);
-		csprng_generate(&rng, KAPPA, W->data + W->next);
-		W->next += KAPPA;
+		csprng_seed(&rng, DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8), serEval);
+		csprng_generate(&rng, KAPPA, W);
 		return;
 	}
 	if (useStored == 1 && depth == Tree->storedLayerDepth) {
-		for (i = 0; i < KAPPA; i++) {
-			W->data[W->next + i] = Tree->storedLayer[node*KAPPA + i];
-		}
-		W->next += KAPPA;
+		reader R = newReader(Tree->storedLayer);
+		R.next = node*KAPPA;
+		transcribe(W, &R, KAPPA);
 		return;
 	}
 	unsigned char * children = malloc(2 * KAPPA);
@@ -74,8 +100,7 @@ void CalculateInternalNode(MerkleTree* Tree, UOVHash_SecretKey *sk, int depth, u
 	csprng_init(&rng);
 	csprng_seed(&rng, 2 * KAPPA, children);
 	free(children);
-	csprng_generate(&rng, KAPPA, W->data + W->next);
-	W->next += KAPPA;
+	csprng_generate(&rng, KAPPA, W);
 }
 
 /*
@@ -114,11 +139,8 @@ void destroy_MerkleTree(MerkleTree* Tree) {
 	W : the writer object
 */
 void serialize_merkleTree(MerkleTree* Tree, writer* W) {
-	int i;
-	for (i = 0; i < (1 << Tree->storedLayerDepth)*KAPPA; i++) {
-		W->data[i + W->next] = Tree->storedLayer[i];
-	}
-	W->next += (1 << Tree->storedLayerDepth)*KAPPA;
+	reader R = newReader(Tree->storedLayer);
+	transcribe(W, &R, KAPPA*(1 << Tree->storedLayerDepth));
 }
 
 /*
@@ -130,14 +152,11 @@ void serialize_merkleTree(MerkleTree* Tree, writer* W) {
 */
 MerkleTree deserialize_merkleTree(int depth, int storedLayerDepth, reader* R) {
 	MerkleTree Tree;
-	int i;
 	Tree.depth = depth;
 	Tree.storedLayerDepth = storedLayerDepth;
 	Tree.storedLayer = malloc((1 << storedLayerDepth)*KAPPA);
-	for (i = 0; i < (1 << storedLayerDepth)*KAPPA; i++) {
-		Tree.storedLayer[i] = R->data[i + R->next];
-	}
-	R->next += (1 << storedLayerDepth)*KAPPA;
+	writer W = newWriter(Tree.storedLayer);
+	transcribe(&W, R, (1 << storedLayerDepth)*KAPPA);
 	return Tree;
 }
 
@@ -179,30 +198,32 @@ void OpenMerkleTreePath(MerkleTree* Tree, UOVHash_SecretKey* sk, uint16_t a, wri
 */
 int VerifyMerkleTreePath(uint64_t c, unsigned char* root, reader* R) {
 	int depth, i;
-	unsigned char leaf[M * sizeof(FELT)];
+	writer W;
+	unsigned char leaf[DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8)];
 	unsigned char buf[2 * KAPPA];
-	memcpy(leaf, R->data + R->next, M * sizeof(FELT));
-	R->next += M * sizeof(FELT);
+	W = newWriter(leaf);
+	transcribe(&W, R, DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8));
 	csprng rng;
 	csprng_init(&rng);
-	csprng_seed(&rng, M * sizeof(FELT), leaf);
+	csprng_seed(&rng, DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8), leaf);
 	for (depth = TAU; depth > 0; depth--) {
 		if ((c & 1) == 0) {
-			csprng_generate(&rng, KAPPA, buf);
-			memcpy(buf + KAPPA, R->data + R->next, KAPPA);
-			R->next += KAPPA;
+			W = newWriter(buf);
+			csprng_generate(&rng, KAPPA, &W);
+			transcribe(&W, R, KAPPA);
 		}
 		else
 		{
-			memcpy(buf, R->data + R->next, KAPPA);
-			R->next += KAPPA;
-			csprng_generate(&rng, KAPPA, buf + KAPPA);
+			W = newWriter(buf);
+			transcribe(&W, R, KAPPA);
+			csprng_generate(&rng, KAPPA, &W);
 		}
 		csprng_init(&rng);
 		csprng_seed(&rng, 2 * KAPPA, buf);
 		c /= 2;
 	}
-	csprng_generate(&rng, KAPPA, buf);
+	W = newWriter(buf);
+	csprng_generate(&rng, KAPPA, &W);
 	for (i = 0; i < KAPPA; i++) {
 		if (buf[i] != root[i]) {
 			return 0;
