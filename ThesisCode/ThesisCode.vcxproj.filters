@@ -90,6 +90,9 @@
     <ClCompile Include="..\Source\common\PrimeField.c">
       <Filter>Source Files\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\UOVHash\MACField.c">
+      <Filter>Source Files\UOVHash</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\common\buffer.h">
@@ -160,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="..\Source\common\PrimeField.h">
       <Filter>Header Files\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\UOVHash\MACField.h">
+      <Filter>Header Files\UOVHash</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

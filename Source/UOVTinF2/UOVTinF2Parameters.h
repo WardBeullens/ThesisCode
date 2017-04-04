@@ -17,14 +17,18 @@ enum { M = 29, V = 83 }; */
 #define F48
 enum { M = 37, V = 136 }; */
 
+/* 128- bit quantum */
+#define F80
+enum { M = 41, V = 264 };
+
 /* 192-bit  
 #define F64
 enum { M = 54, V = 225 };*/
 
-/* 256-bit */
+/* 256-bit 
 #define F80
 #define LARGECONTAINER
-enum { M = 70, V = 302 }; 
+enum { M = 70, V = 302 }; */
 
 
 /* derived parameters */

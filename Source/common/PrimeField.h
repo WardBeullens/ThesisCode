@@ -4,6 +4,10 @@
 #define PRIMEFIELD_H
 
 /* Prime number */
+#ifndef FIELDPRIME
+#define FIELDPRIME 31
+#endif
+
 #if FIELDPRIME == 31
 #define BITS 5
 #endif

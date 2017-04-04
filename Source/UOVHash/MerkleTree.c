@@ -8,7 +8,7 @@
 	leaf : the index of the leaf
 	W : writer object to which the leaf value is written
 */
-#ifdef scalarMultiply
+#ifndef PRIME_FIELD
 void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
 	uint64_t k;
 	int j;
@@ -20,12 +20,12 @@ void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
 	}
 	if (leaf == 0) {
 		for (k = 0; k < M; k++) {
-			evaluation[k] = sk->B2.array[0][k];
+			evaluation[k] = sk->B2.array[D2-1][k];
 		}
 	}
 	else {
 		uint16_t x = f16Log(leaf);
-		for (j = D2 - 1; j >= 0; j--) {
+		for (j = 0; j< D2; j++) {
 			for (k = 0; k < M; k++) {
 				scalarMultiply(&evaluation[k], x);
 				addBtoA(&evaluation[k], &sk->B2.array[j][k]);
@@ -38,31 +38,36 @@ void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
 }
 #else
 void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
-	uint64_t k;
-	int j;
+	uint64_t j,k,l;
 
-	FELT evaluation[M];
+	MACFELT evaluation[M];
+	MACFELT MACtemp;
 
 	for (j = 0; j < M; j++) {
-		evaluation[j] = ZERO;
+		evaluation[j] = MACZERO;
 	}
-	if (leaf == 0) {
+	
+	MACFELT x = intToMACFELT(leaf);
+	for (j = 0; j < D2; j+= K) {
 		for (k = 0; k < M; k++) {
-			evaluation[k] = sk->B2.array[0][k];
-		}
-	}
-	else {
-		FELT x = intToFELT(leaf);
-		for (j = D2 - 1; j >= 0; j--) {
-			for (k = 0; k < M; k++) {
-				evaluation[k] = multiply(evaluation[k], x);
-				addBtoA(&evaluation[k], &sk->B2.array[j][k]);
+			for (l = 0; l < K; l++) {
+				if (j + l < D2) {
+					setCoef(MACtemp, l, sk->B2.array[j+l][k]);
+				}
+				else
+				{
+					setCoef(MACtemp, l, ZERO);
+				}
 			}
+			evaluation[k] = MACmultiply(evaluation[k], x);
+			evaluation[k] = MACadd(evaluation[k], MACtemp);
 		}
 	}
+
 	for (j = 0; j < M; j++) {
-		serialize_FELT(W, evaluation[j]);
+		serialize_MACFELT(W, evaluation[j]);
 	}
+	serialize_uint64_t(W, 0, (8 - W->bitsUsed) % 8);
 }
 #endif
 /*
@@ -77,12 +82,12 @@ void calculateLeaf(UOVHash_SecretKey *sk, uint16_t leaf, writer* W) {
 */
 void CalculateInternalNode(MerkleTree* Tree, UOVHash_SecretKey *sk, int depth, uint16_t node, writer* W, int useStored) {
 	if (depth == Tree->depth) {
-		unsigned char serEval[DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8)];
+		unsigned char serEval[DIVIDE_AND_ROUND_UP(M *K* BITS_PER_FELT, 8)];
 		writer evalW = newWriter(serEval);
 		calculateLeaf(sk, node, &evalW);
 		csprng rng;
 		csprng_init(&rng);
-		csprng_seed(&rng, DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8), serEval);
+		csprng_seed(&rng, DIVIDE_AND_ROUND_UP(M *K* BITS_PER_FELT, 8), serEval);
 		csprng_generate(&rng, KAPPA, W);
 		return;
 	}
@@ -199,13 +204,13 @@ void OpenMerkleTreePath(MerkleTree* Tree, UOVHash_SecretKey* sk, uint16_t a, wri
 int VerifyMerkleTreePath(uint64_t c, unsigned char* root, reader* R) {
 	int depth, i;
 	writer W;
-	unsigned char leaf[DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8)];
+	unsigned char leaf[DIVIDE_AND_ROUND_UP(M*K*BITS_PER_FELT, 8)];
 	unsigned char buf[2 * KAPPA];
 	W = newWriter(leaf);
-	transcribe(&W, R, DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8));
+	transcribe(&W, R, DIVIDE_AND_ROUND_UP(M*K*BITS_PER_FELT, 8));
 	csprng rng;
 	csprng_init(&rng);
-	csprng_seed(&rng, DIVIDE_AND_ROUND_UP(M * BITS_PER_FELT, 8), leaf);
+	csprng_seed(&rng, DIVIDE_AND_ROUND_UP(M*K*BITS_PER_FELT, 8), leaf);
 	for (depth = TAU; depth > 0; depth--) {
 		if ((c & 1) == 0) {
 			W = newWriter(buf);

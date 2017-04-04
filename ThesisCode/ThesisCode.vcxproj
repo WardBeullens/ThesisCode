@@ -155,6 +155,7 @@
     <ClCompile Include="..\Source\common\PrimeField.c" />
     <ClCompile Include="..\Source\common\twister.c" />
     <ClCompile Include="..\Source\UOVClassic\UOVClassic.c" />
+    <ClCompile Include="..\Source\UOVHash\MACField.c" />
     <ClCompile Include="..\Source\UOVHash\MerkleTree.c" />
     <ClCompile Include="..\Source\UOVHash\UOVHash.c" />
     <ClCompile Include="..\Source\UOVTinF2\128Bitcontainer.c" />
@@ -176,6 +177,7 @@
     <ClInclude Include="..\Source\UOVClassic\UOVClassicApi.h" />
     <ClInclude Include="..\Source\UOVClassic\UOVClassicParameters.h" />
     <ClInclude Include="..\Source\UOVClassic\UOVClassic.h" />
+    <ClInclude Include="..\Source\UOVHash\MACField.h" />
     <ClInclude Include="..\Source\UOVHash\UOVHashApi.h" />
     <ClInclude Include="..\Source\UOVHash\MerkleTree.h" />
     <ClInclude Include="..\Source\UOVHash\UOVHash.h" />

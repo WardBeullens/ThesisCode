@@ -78,8 +78,11 @@ void UOVHash_deserialize_PublicKey(reader* R, UOVHash_PublicKey* pk) {
 	S : the signature
 */
 void UOVHash_serialize_signature(writer* W, UOVHash_Signature* S) {
+	int i;
 	reader R = newReader(S->merklePaths);
-	serialize_matrix(W, S->s);
+	for (i = 0; i < SIGMA; i++) {
+		serialize_matrix(W, S->signatures[i]);
+	}
 	serialize_matrix(W, S->TP);
 	transcribe(W, &R , MERKLE_PATHS_SIZE);
 }
@@ -91,13 +94,16 @@ void UOVHash_serialize_signature(writer* W, UOVHash_Signature* S) {
 	S : receives the signature
 */
 void UOVHash_deserialize_signature(reader* R, UOVHash_Signature* S) {
+	int i;
 	writer W;
-	S->s = newMatrix(N, 1);
+	for (i = 0; i < SIGMA; i++) {
+		S->signatures[i] = newMatrix(N, 1);
+		deserialize_matrix(R, S->signatures[i]);
+	}
 	S->TP = newMatrix(D2, ALPHA);
-	deserialize_matrix(R, S->s);
 	deserialize_matrix(R, S->TP);
 
-	S->merklePaths = malloc((THETA*(KAPPA*TAU + M * sizeof(FELT))));
+	S->merklePaths = malloc(MERKLE_PATHS_SIZE);
 	W = newWriter(S->merklePaths);
 	transcribe(&W, R, MERKLE_PATHS_SIZE);
 }
@@ -106,7 +112,10 @@ void UOVHash_deserialize_signature(reader* R, UOVHash_Signature* S) {
 	Frees the memory allocated by a signature
 */
 void UOVHash_destroy_signature(UOVHash_Signature *S) {
-	destroy(S->s);
+	int i;
+	for (i = 0; i < SIGMA; i++) {
+		destroy(S->signatures[i]);
+	}
 	destroy(S->TP);
 	free(S->merklePaths);
 }
@@ -153,49 +162,56 @@ void UOVHash_generateKeyPair(UOVHash_PublicKey *pk, UOVHash_SecretKey *sk) {
 */
 UOVHash_Signature UOVHash_signDocument(UOVHash_SecretKey sk, const unsigned char* document, uint64_t len) {
 	int i, j;
+	int s;
 	FELT temp;
 	Matrix hash,T;
 	UOVHash_Signature sig;
 	csprng rng;
 	writer W;
 
-	/* calculate hash of document */
-	csprng_init(&rng);
-	csprng_seed(&rng, len, document);
-	hash = randomMatrixrng(M, 1, &rng);
+	for (s = 0; s < SIGMA; s++) {
+		/* calculate hash of document */
+		csprng_seed_uint64_t(&rng, s);
+		csprng_seed(&rng, len, document);
+		hash = randomMatrixrng(M, 1, &rng);
 
-	/* find solution of private system */
-	csprng_init(&rng);
-	csprng_seed(&rng, len, document);
-	csprng_seed(&rng, KAPPA , sk.seed);
-	sig.s = findSolutionOfUOVSystem(sk.Q, hash, &rng);
+		/* find solution of private system */
+		csprng_init(&rng);
+		csprng_seed(&rng, len, document);
+		csprng_seed(&rng, KAPPA, sk.seed);
+		sig.signatures[s] = findSolutionOfUOVSystem(sk.Q, hash, &rng);
 
-	/* convert to solution of public system */
-	for (i = 0; i < V; i++) {
-		for (j = 0; j < O; j++) {
-			temp = minus(multiply(sig.s.array[V + j][0], sk.T.array[i][j]));
-			addBtoA(&sig.s.array[i][0], &temp);
+		/* convert to solution of public system */
+		for (i = 0; i < V; i++) {
+			for (j = 0; j < O; j++) {
+				temp = minus(multiply(sig.signatures[s].array[V + j][0], sk.T.array[i][j]));
+				addBtoA(&sig.signatures[s].array[i][0], &temp);
+			}
 		}
 	}
 
 	/* calculate TP */
 	csprng_init(&rng);
 	csprng_seed(&rng, len, document);
-	csprng_seed_matrix(&rng, sig.s);
+	for (s = 0; s < SIGMA; s++) {
+		csprng_seed_matrix(&rng, sig.signatures[s]);
+	}
 	T = randomMatrixrng(M, ALPHA, &rng);
 	sig.TP = multiplyAB(sk.B2,T);
 
 	/* Include merkle paths in signature */
 	csprng_init(&rng);
 	csprng_seed(&rng, len, document);
-	csprng_seed_matrix(&rng, sig.s);
+	for (s = 0; s < SIGMA; s++) {
+		csprng_seed_matrix(&rng, sig.signatures[s]);
+	}
 	csprng_seed_matrix(&rng, sig.TP);
 
 	unsigned char challenges[THETA * 4];
 	W = newWriter(challenges);
 	csprng_generate(&rng, THETA * 4, &W);
 
-	sig.merklePaths = malloc(THETA*(KAPPA*TAU + M * sizeof(FELT)));
+	sig.merklePaths = malloc(MERKLE_PATHS_SIZE);
 	reader R = newReader(challenges);
 	W = newWriter(sig.merklePaths);
 	for (i = 0; i < THETA; i++) {
@@ -217,8 +233,7 @@ UOVHash_Signature UOVHash_signDocument(UOVHash_SecretKey sk, const unsigned char
 	returns : 0 if the signature is valid, -1 otherwise
 */
 int UOVHash_verify(UOVHash_PublicKey* pk, UOVHash_Signature* signature, unsigned char* document, uint64_t len) {
-	int i, j, k;
-	uint64_t resetnext;
+	int i, j, k, l , s;
 	int valid = 0;
 	FELT temp;
 	writer W;
@@ -226,104 +241,128 @@ int UOVHash_verify(UOVHash_PublicKey* pk, UOVHash_Signature* signature, unsigned
 	Matrix hash , T , Thash;
 	csprng rng;
 	twister MT;
-	seedMT(&MT, pk->seed);
-
-	/* calculate hash of document */
-	csprng_init(&rng);
-	csprng_seed(&rng, len, document);
-	hash = randomMatrixrng(M, 1, &rng);
-
-	/* subtract the evaluation of the first part of the public system at the signature from the hash */
-	for (i = 0; i < V; i++) {
-		for (j = i; j < N; j++) {
-			FELT prod = multiply(signature->s.array[i][0], signature->s.array[j][0]);
-			for (k = 0; k < M; k++) {
-				temp = minus(multiply(prod, randomMTFELT(&MT)));
-				addBtoA(&hash.array[k][0], &temp);
-			}
-		}
-	}
-
-	/* calculate the evaluation of TP at the signature */
-	Matrix evaluation = zeroMatrix(ALPHA, 1);
-	int col = 0;
-	for (i = V; i < N; i++) {
-		for (j = i; j < N; j++) {
-			FELT prod = multiply(signature->s.array[i][0], signature->s.array[j][0]);
-			for (k = 0; k < ALPHA; k++) {
-				temp = multiply(prod, signature->TP.array[col][k]);
-				addBtoA(&evaluation.array[k][0], &temp);
-			}
-			col++;
-		}
-	}
 
 	/* calculate T */
 	csprng_init(&rng);
 	csprng_seed(&rng, len, document);
-	csprng_seed_matrix(&rng, signature->s);
-	T = randomMatrixrng(M, ALPHA , &rng);
-	
-	/* verify if TP(sign) = T*hash */
-	Thash = multiplyAtB(T, hash);
-	int eq = equals(evaluation, Thash);
-
-	if (eq != 1) {
-		printf("signature was invalid : invalid UOV signature \n");
-		valid = -1;
+	for (s = 0; s < SIGMA; s++) {
+		csprng_seed_matrix(&rng, signature->signatures[s]);
 	}
-	destroy(evaluation);
-	destroy(hash);
-	destroy(Thash);
+	T = randomMatrixrng(M, ALPHA, &rng);
+
+	for (s = 0; s < SIGMA; s++) {
+		seedMT(&MT, pk->seed);
+
+		/* calculate hash of document */
+		csprng_seed_uint64_t(&rng, s);
+		csprng_seed(&rng, len, document);
+		hash = randomMatrixrng(M, 1, &rng);
+
+		/* subtract the evaluation of the first part of the public system at the signature from the hash */
+		for (i = 0; i < V; i++) {
+			for (j = i; j < N; j++) {
+				FELT prod = multiply(signature->signatures[s].array[i][0], signature->signatures[s].array[j][0]);
+				for (k = 0; k < M; k++) {
+					temp = minus(multiply(prod, randomMTFELT(&MT)));
+					addBtoA(&hash.array[k][0], &temp);
+				}
+			}
+		}
+
+		/* calculate the evaluation of TP at the signature */
+		Matrix evaluation = zeroMatrix(ALPHA, 1);
+		int col = 0;
+		for (i = V; i < N; i++) {
+			for (j = i; j < N; j++) {
+				FELT prod = multiply(signature->signatures[s].array[i][0], signature->signatures[s].array[j][0]);
+				for (k = 0; k < ALPHA; k++) {
+					temp = multiply(prod, signature->TP.array[col][k]);
+					addBtoA(&evaluation.array[k][0], &temp);
+				}
+				col++;
+			}
+		}
+	
+		/* verify if TP(sign) = T*hash */
+		Thash = multiplyAtB(T, hash);
+		int eq = equals(evaluation, Thash);
+
+		if (eq != 1) {
+			printf("signature was invalid : signature #%d is an invalid UOV signature \n",s);
+			valid = -1;
+		}
+		destroy(evaluation);
+		destroy(hash);
+		destroy(Thash);
+	}
 
 	if (valid == 0) {
 
 		/* calculate indices of leaves to check */
 		csprng_init(&rng);
 		csprng_seed(&rng, len, document);
-		csprng_seed_matrix(&rng, signature->s);
+		for (s = 0; s < SIGMA; s++) {
+			csprng_seed_matrix(&rng, signature->signatures[s]);
+		}
 		csprng_seed_matrix(&rng, signature->TP);
 		unsigned char challenges[THETA * 4];
 		W = newWriter(challenges);
 		csprng_generate(&rng, THETA * 4, &W);
 		reader ChallengeReader = newReader(challenges);
 		reader R = newReader(signature->merklePaths);
-		Matrix check;
-		Matrix Tcheck;
+		reader R2;
+		MACFELT check[M];
+		MACFELT Tcheck[ALPHA];
+		MACFELT MACevaluation[ALPHA];
 
 		/* checking if leaves are valid */
 		for (i = 0; i < THETA; i++) {
 			if (valid != 0) {
 				break;
 			}
-			
+
 			uint64_t c = deserialize_uint64_t(&ChallengeReader, TAU);
 
 			/* check whether the mac value is valid */
-			check = newMatrix(M, 1);
-			resetnext = R.next;
-			deserialize_matrix(&R, check);
-			R.next = resetnext;
-			R.bitsUsed = 0;
-			Tcheck = multiplyAtB(T, check);
+			for (j = 0; j < ALPHA; j++) {
+				Tcheck[j] = MACZERO; /* Tcheck = 0 */
+				MACevaluation[j] = MACZERO;
+			}
 
-			evaluation = zeroMatrix(ALPHA, 1);
-			FELT x = intToFELT(c);
-			
-			for (j = D2 - 1; j >= 0; j--) {
+			R2.data = R.data;
+			R2.next = R.next;
+			R2.bitsUsed = R.bitsUsed;
+			for (j = 0; j < M; j++) {
+				check[j] = deserialize_MACFELT(&R2); /* read mac value */
 				for (k = 0; k < ALPHA; k++) {
-					evaluation.array[k][0] = add(multiply(evaluation.array[k][0], x), signature->TP.array[j][k]);
+					Tcheck[k] = MACadd(Tcheck[k], MACscalarMultiply(T.array[j][k], check[j])); /* calculate T * check */
 				}
 			}
 
-			if (equals(evaluation, Tcheck) == 0) {
-				printf("signature was invalid : authenticity check of TP failed\n");
-				valid = -1;
+			MACFELT x = intToMACFELT(c);
+			MACFELT MACtemp;
+
+			for (j = 0 ; j < D2; j+= K) {
+				for (k = 0; k < ALPHA; k++) {
+					for (l = 0; l < K; l++) {
+						if (j + l < D2) {
+							setCoef(MACtemp, l, signature->TP.array[j+l][k]);
+						}
+						else
+						{
+							setCoef(MACtemp, l, ZERO);
+						}
+					}
+					MACevaluation[k] = MACadd(MACmultiply(MACevaluation[k], x), MACtemp);
+				}
 			}
 
-			destroy(evaluation);
-			destroy(check);
-			destroy(Tcheck);
+			for (j = 0; j < ALPHA; j++){
+				if (MACisEqual(MACevaluation[j], Tcheck[j]) == 0) {
+					printf("signature was invalid : authenticity check of TP failed\n");
+					valid = -1;
+				}
+			}
 
 			/* check whether the merkle path is valid */
 			if (VerifyMerkleTreePath(c, pk->merkleRoot , &R) == 0) {

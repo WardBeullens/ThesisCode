@@ -69,10 +69,8 @@ int crypto_sign_wbtest_ref(unsigned char *sm, unsigned long long *smlen, const u
 	signature = signDocument(skey, m, mlen);
 
 	serialize_signature(&W, &signature);
+	serialize_uint64_t(&W, 0, (8 - W.bitsUsed) % 8);
 	*smlen = W.next;
-	if (W.bitsUsed != 0) {
-		*smlen += 1;
-	}
 
 	destroy_signature(&signature);
 	destroy_SecretKey(&skey);

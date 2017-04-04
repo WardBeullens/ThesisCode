@@ -65,10 +65,7 @@ int csprng_seed(csprng* rng, uint64_t seed_length, const unsigned char * seed)
 int csprng_generate(csprng* rng, uint64_t buffer_length, writer *W)
 {
 	unsigned short int i, j;
-	if (W->bitsUsed != 0) {
-		W->bitsUsed = 0;
-		W->next++;
-	}
+	serialize_uint64_t(W, 0,(8 - W->bitsUsed)%8);
 
 	/* squeeze out all the full output blocks */
 	for (i = 0; i < buffer_length / csprng_gen_rate; ++i)

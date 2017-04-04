@@ -10,6 +10,7 @@
 #include "buffer.h"
 #include "MerkleTree.h"
 #include "UOVClassic.h"
+#include "MACField.h"
 
 typedef struct UOVHash_SecretKey {
 	unsigned char seed[KAPPA];
@@ -26,7 +27,7 @@ typedef struct UOVHash_PublicKey {
 } UOVHash_PublicKey;
 
 typedef struct UOVHash_Signature {
-	Matrix s;
+	Matrix signatures[SIGMA];
 	Matrix TP;
 	unsigned char* merklePaths;
 } UOVHash_Signature;

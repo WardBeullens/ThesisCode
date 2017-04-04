@@ -102,14 +102,9 @@ reader newReader(const unsigned char* buf) {
 
 
 void transcribe(writer *W, reader *R, int bytes) {
-	if (W->bitsUsed != 0) {
-		W->bitsUsed = 0;
-		W->next++;
-	}
-	if (R->bitsUsed != 0) {
-		R->bitsUsed = 0;
-		R->next++;
-	}
+	serialize_uint64_t(W, 0, (8 - W->bitsUsed) % 8);
+	deserialize_uint64_t(R, (8 - R->bitsUsed) % 8);
+	
 	memcpy(W->data + W->next, R->data + R->next, bytes);
 	W->next += bytes;
 	R->next += bytes;
