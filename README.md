@@ -9,7 +9,7 @@ The source code is divided in 4 folders:
 - common/ : Contains code which is used by all 3 algorithms such as field arithmetic. This folder also contains code for running and timing the algorithms in the "main.c" file.
 - UOVClassic/ : Contains code for the implementation of UOV, with Petzold's method of reducing the size of the public key
 - LUOV/ : Contains the implementation for a version of UOV with public and private with coeficients in F_2, but lifted to a large extension field of F_2
-- UOVHash : Contains the implementation for a version of UOV which reduced the public key size by using techniques from hash based crypto
+- UOVHash/ : Contains the implementation for a version of UOV which reduced the public key size by using techniques from hash based crypto
 
 ## Choosing parameters:
 
