@@ -14,40 +14,116 @@
 	and THETA , the number of MAC tests included in the signature
 */
 
-/* test 
-#define PRIME_FIELD
-#define FIELDPRIME 31
-#define K 4
-#define SIGMA 3
-enum { M = 2, ALPHA = 2, TAU = 16, KAPPA = 2, THETA = 1 }; */
+/* 100 BITS OF SECURITY */
 
-/* 100-bit 
-#define F32
-enum { M = 29, ALPHA = 3, TAU = 16, KAPPA = 13, THETA = 14 }; */
+	/* CLASSICAL SECURITY */
 
-/* 128-bit 
-#define F48
-enum { M = 36, ALPHA = 3 , TAU = 16 , KAPPA = 16 , THETA = 20}; */
+		/* PROVABLE REDUCTION TO UOV
+			#define F32
+			enum { M = 29, ALPHA = 3, TAU = 16, KAPPA = 13, THETA = 14 }; */
 
-/* 128-bit quantum */
-#define F64
-#define SIGMA 4
-enum { M = 40, ALPHA = 1, TAU = 16, KAPPA = 32, THETA = 42 }; 
+		/* NO PROVABLE REDUCTION TO UOV 
+			#define PRIME_FIELD
+			#define FIELDPRIME 127
+			#define K 3
+			#define SIGMA 8
+			enum { M = 39, ALPHA = 2, TAU = 16, KAPPA = 13, THETA = 13 }; */
 
-/* 128-bit quantum 
-#define PRIME_FIELD
-#define FIELDPRIME 31
-#define K 4
-#define SIGMA 18
-enum { M = 71, ALPHA = 3, TAU = 16, KAPPA = 32, THETA = 55 }; */
+	/* QUANTUM SECURITY */
 
-/* 192-bit 
-#define F64
-enum { M = 52, ALPHA = 3 , TAU = 16 , KAPPA = 24 , THETA = 35}; */
+		/* PROVABLE REDUCTION TO UOV 
+			#define F32
+			enum { M = 35, ALPHA = 7, TAU = 16, KAPPA = 26, THETA = 28 }; */
 
-/* 256-bit 
-#define F80
-enum { M = 68, ALPHA = 3 , TAU = 16 , KAPPA = 32 , THETA = 53 }; */
+		/* NO PROVABLE REDUCTION TO UOV
+			#define PRIME_FIELD
+			#define FIELDPRIME 127
+			#define K 3
+			#define SIGMA 15
+			enum { M = 47, ALPHA = 2, TAU = 16, KAPPA = 26, THETA = 27 }; */
+
+/* 128 BITS OF SECURITY */
+
+	/* CLASSICAL SECURITY */
+
+		/* PROVABLE REDUCTION TO UOV */
+			#define F48
+			enum {M = 36, ALPHA = 3 , TAU = 16 , KAPPA = 16 , THETA = 20}; 
+
+		/* NO PROVABLE REDUCTION TO UOV 
+			#define PRIME_FIELD
+			#define FIELDPRIME 127
+			#define K 3
+			#define SIGMA 10
+			enum { M = 50, ALPHA = 2, TAU = 16, KAPPA = 16, THETA = 18 }; */
+
+	/* QUANTUM SECURITY */
+
+		/* PROVABLE REDUCTION TO UOV 
+			#define F48
+			enum { M = 42, ALPHA = 6, TAU = 16, KAPPA = 32, THETA = 39 }; */
+
+		/* NO PROVABLE REDUCTION TO UOV 
+			#define PRIME_FIELD
+			#define FIELDPRIME 127
+			#define K 3
+			#define SIGMA 19
+			enum { M = 60, ALPHA = 2, TAU = 16, KAPPA = 32, THETA = 38 }; */
+
+/* 192 BITS OF SECURITY */
+
+	/* CLASSICAL SECURITY */
+
+		/* PROVABLE REDUCTION TO UOV  
+			#define F64
+			enum { M = 52, ALPHA = 3 , TAU = 16 , KAPPA = 24 , THETA = 35}; */
+
+		/* NO PROVABLE REDUCTION TO UOV 
+			#define PRIME_FIELD
+			#define FIELDPRIME 127
+			#define K 3
+			#define SIGMA 14
+			enum { M = 76, ALPHA = 2, TAU = 16, KAPPA = 24, THETA = 32 }; */
+
+	/* QUANTUM SECURITY */
+		/* PROVABLE REDUCTION TO UOV 
+			#define F64
+			enum { M = 62, ALPHA = 6 , TAU = 16 , KAPPA = 48 , THETA = 69}; */
+
+		/* NO PROVABLE REDUCTION TO UOV 
+			#define PRIME_FIELD
+			#define FIELDPRIME 127
+			#define K 3
+			#define SIGMA 28
+			enum { M = 92, ALPHA = 2, TAU = 16, KAPPA = 48, THETA = 70 }; */
+
+
+/* 256 BITS OF SECURITY */
+	
+	/* CLASSICAL SECURITY*/
+
+		/* PROVABLE REDUCTION TO UOV 
+			#define F80
+			enum { M = 68, ALPHA = 4 , TAU = 16 , KAPPA = 32 , THETA = 54 }; */
+
+		/* NO PROVABLE REDUCTION TO UOV 
+			#define PRIME_FIELD
+			#define FIELDPRIME 127
+			#define K 3
+			#define SIGMA 19
+			enum { M = 102, ALPHA = 2, TAU = 16, KAPPA = 32, THETA = 49 }; */
+
+	/* QUANTUM SECURITY */
+		/* PROVABLE REDUCTION TO UOV 
+			#define F80
+			enum { M = 83, ALPHA = 7, TAU = 16, KAPPA = 64, THETA = 107 }; */
+
+		/* NO PROVABLE REDUCTION TO UOV 
+			#define PRIME_FIELD
+			#define FIELDPRIME 127
+			#define K 3
+			#define SIGMA 37
+			enum { M = 124, ALPHA = 2, TAU = 16, KAPPA = 64, THETA = 110 }; */
 
 /*derived parameters */
 

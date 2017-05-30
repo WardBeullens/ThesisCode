@@ -1,6 +1,6 @@
-#include "UOVTinF2.h"
+#include "LUOV.h"
 
-void UOVTINF2_calculatePrivateQ(UOVTINF2_SecretKey *sk, uint32_t seed);
+void LUOV_calculatePrivateQ(LUOV_SecretKey *sk, uint32_t seed);
 void randomizeArrayKeccak(bitcontainer *arr, int size, unsigned char *seed);
 void randomizeArrayMT(bitcontainer *arr, int size, uint32_t seed);
 
@@ -10,7 +10,7 @@ void randomizeArrayMT(bitcontainer *arr, int size, uint32_t seed);
 	W  : A writer object
 	sk : a secret key
 */
-void UOVTINF2_serialize_SecretKey(writer *W, UOVTINF2_SecretKey *sk) {
+void LUOV_serialize_SecretKey(writer *W, LUOV_SecretKey *sk) {
 	reader R = newReader(sk->privateseed);
 	transcribe(W, &R, 32);
 	serialize_uint64_t(W, sk->publicseed, 32);
@@ -22,7 +22,7 @@ void UOVTINF2_serialize_SecretKey(writer *W, UOVTINF2_SecretKey *sk) {
 	R : A reader object
 	sk : receives the secret key
 */
-void UOVTINF2_deserialize_SecretKey(reader *R, UOVTINF2_SecretKey *sk) {
+void LUOV_deserialize_SecretKey(reader *R, LUOV_SecretKey *sk) {
 	writer W = newWriter(sk->privateseed);
 	transcribe(&W, R, 32);
 	sk->publicseed = ((uint32_t) deserialize_uint64_t(R, 32));
@@ -32,13 +32,13 @@ void UOVTINF2_deserialize_SecretKey(reader *R, UOVTINF2_SecretKey *sk) {
 	randomizeArrayKeccak(sk->T, V, sk->privateseed);
 	sk->T[0] = empty;
 
-	UOVTINF2_calculatePrivateQ(sk, sk->publicseed);
+	LUOV_calculatePrivateQ(sk, sk->publicseed);
 }
 
 /*
 	Frees the memory allocated by a secret key
 */
-void UOVTINF2_destroy_SecretKey(UOVTINF2_SecretKey *sk) {
+void LUOV_destroy_SecretKey(LUOV_SecretKey *sk) {
 	free(sk->Q);
 }
 
@@ -48,7 +48,7 @@ void UOVTINF2_destroy_SecretKey(UOVTINF2_SecretKey *sk) {
 	W : A writer object
 	pk : the public key
 */
-void UOVTINF2_serialize_PublicKey(writer* W, UOVTINF2_PublicKey* pk) {
+void LUOV_serialize_PublicKey(writer* W, LUOV_PublicKey* pk) {
 	int i;
 	serialize_uint64_t(W, pk->seed, 32);
 	for (i = 0; i < D2; i++) {
@@ -63,7 +63,7 @@ void UOVTINF2_serialize_PublicKey(writer* W, UOVTINF2_PublicKey* pk) {
 	R : A reader object
 	pk : receives the public key
 */
-void UOVTINF2_deserialize_PublicKey(reader* R, UOVTINF2_PublicKey* pk) {
+void LUOV_deserialize_PublicKey(reader* R, LUOV_PublicKey* pk) {
 	int i;
 	pk->seed = ((uint32_t) deserialize_uint64_t(R, 32));
 	pk->B2 = malloc(sizeof(bitcontainer)*D2);
@@ -76,7 +76,7 @@ void UOVTINF2_deserialize_PublicKey(reader* R, UOVTINF2_PublicKey* pk) {
 /*
 	Frees the memory allocated by a public key
 */
-void UOVTINF2_destroy_PublicKey(UOVTINF2_PublicKey *pk) {
+void LUOV_destroy_PublicKey(LUOV_PublicKey *pk) {
 	free(pk->B2);
 }
 
@@ -86,7 +86,7 @@ void UOVTINF2_destroy_PublicKey(UOVTINF2_PublicKey *pk) {
 	W : A writer object
 	S : the signature
 */
-void UOVTINF2_serialize_signature(writer* W, UOVTINF2_Signature* S) {
+void LUOV_serialize_signature(writer* W, LUOV_Signature* S) {
 	serialize_matrix(W, S->s);
 }
 
@@ -96,7 +96,7 @@ void UOVTINF2_serialize_signature(writer* W, UOVTINF2_Signature* S) {
 	R : A reader object
 	S : receives the signature
 */
-void UOVTINF2_deserialize_signature(reader* R, UOVTINF2_Signature* S) {
+void LUOV_deserialize_signature(reader* R, LUOV_Signature* S) {
 	S->s = newMatrix(N, 1);
 	deserialize_matrix(R, S->s);
 }
@@ -104,7 +104,7 @@ void UOVTINF2_deserialize_signature(reader* R, UOVTINF2_Signature* S) {
 /*
 	Frees the memory allocated by a signature
 */
-void UOVTINF2_destroy_signature(UOVTINF2_Signature *S) {
+void LUOV_destroy_signature(LUOV_Signature *S) {
 	destroy(S->s);
 }
 
@@ -115,7 +115,7 @@ void UOVTINF2_destroy_signature(UOVTINF2_Signature *S) {
 	sk : the secret key
 	seed : a seed used to generate the first part of the public system
 */
-void UOVTINF2_calculatePrivateQ(UOVTINF2_SecretKey *sk, uint32_t seed) {
+void LUOV_calculatePrivateQ(LUOV_SecretKey *sk, uint32_t seed) {
 	int i, j, s, r,col;
 	int a = -1;
 	randomizeArrayMT(sk->Q, D, seed);
@@ -180,13 +180,15 @@ void randomizeArrayMT(bitcontainer *arr, int size , uint32_t seed) {
 	sk : the secret key
 	pk : the public key
 */
-void UOVTINF2_calculateB2(UOVTINF2_SecretKey *sk , UOVTINF2_PublicKey *pk) {
+void LUOV_calculateB2(LUOV_SecretKey *sk , LUOV_PublicKey *pk) {
 	int i, j,k;
 	int col = 0;
-	bitcontainer Q2[V][O];
-	bitcontainer B2[V][O];
+	bitcontainer **Q2 = malloc(sizeof(bitcontainer*) * V);
+	bitcontainer **B2 = malloc(sizeof(bitcontainer*) * V);
 
 	for (i = 0; i < V; i++) {
+		Q2[i] = malloc(sizeof(bitcontainer)*O);
+		B2[i] = malloc(sizeof(bitcontainer)*O);
 		for (j = 0; j < O; j++) {
 			Q2[i][j] = empty;
 			B2[i][j] = empty;
@@ -233,6 +235,13 @@ void UOVTINF2_calculateB2(UOVTINF2_SecretKey *sk , UOVTINF2_PublicKey *pk) {
 			col++;
 		}
 	}
+
+	for (i = 0; i < V; i++) {
+		free(Q2[i]);
+		free(B2[i]);
+	}
+	free(Q2);
+	free(B2);
 }
 
 /*
@@ -241,7 +250,7 @@ void UOVTINF2_calculateB2(UOVTINF2_SecretKey *sk , UOVTINF2_PublicKey *pk) {
 	pk : receives the public key
 	sk : receives the secret key
 */
-void UOVTINF2_generateKeyPair(UOVTINF2_PublicKey *pk, UOVTINF2_SecretKey *sk) {
+void LUOV_generateKeyPair(LUOV_PublicKey *pk, LUOV_SecretKey *sk) {
 	int i;
 	for (i = 0; i < 32; i++) {
 		sk->privateseed[i] = ((unsigned char) rand());
@@ -255,8 +264,8 @@ void UOVTINF2_generateKeyPair(UOVTINF2_PublicKey *pk, UOVTINF2_SecretKey *sk) {
 	randomizeArrayKeccak(sk->T, V, sk->privateseed);
 	sk->T[0]=empty; /* makes T linear in stead of affine*/
 
-	UOVTINF2_calculatePrivateQ(sk, pk->seed);
-	UOVTINF2_calculateB2( sk , pk);
+	LUOV_calculatePrivateQ(sk, pk->seed);
+	LUOV_calculateB2( sk , pk);
 }
 
 /*
@@ -267,7 +276,7 @@ void UOVTINF2_generateKeyPair(UOVTINF2_PublicKey *pk, UOVTINF2_SecretKey *sk) {
 	target : The target for the UOV system
 	system : The transpose of the first V*(V+1)/2 + V*O columns of the macaulay matrix for the UOV system (the last O*(O+1)/2 columns are zero anyway )
 */
-void BuildAugmentedMatrixTinF2(Matrix A, Matrix signature, Matrix target, bitcontainer *system) {
+void BuildAugmentedMatrixLUOV(Matrix A, Matrix signature, Matrix target, bitcontainer *system) {
 	int i, j, k , col;
 	for (k = 0; k < M; k++) {
 		A.array[k][O] = target.array[k][0];
@@ -304,7 +313,7 @@ void BuildAugmentedMatrixTinF2(Matrix A, Matrix signature, Matrix target, bitcon
 
 	returns : A N-by-1 matrix containing a solution 
 */
-Matrix solveUOVSystem(UOVTINF2_SecretKey sk, Matrix hash , csprng *rng) {
+Matrix solveUOVSystem(LUOV_SecretKey sk, Matrix hash , csprng *rng) {
 	int i;
 	Matrix signature;
 	Matrix A;
@@ -317,7 +326,7 @@ Matrix solveUOVSystem(UOVTINF2_SecretKey sk, Matrix hash , csprng *rng) {
 
 		A = zeroMatrix(M, O + 1);
 
-		BuildAugmentedMatrixTinF2(A, signature, hash, sk.Q);
+		BuildAugmentedMatrixLUOV(A, signature, hash, sk.Q);
 		x = getSolution(A);
 
 		destroy(A);
@@ -342,11 +351,11 @@ Matrix solveUOVSystem(UOVTINF2_SecretKey sk, Matrix hash , csprng *rng) {
 
 	returns : A signature for the document
 */
-UOVTINF2_Signature UOVTINF2_signDocument(UOVTINF2_SecretKey sk,const unsigned char *document , uint64_t len) {
+LUOV_Signature LUOV_signDocument(LUOV_SecretKey sk,const unsigned char *document , uint64_t len) {
 	int i, j;
 	FELT temp;
 	Matrix hash;
-	UOVTINF2_Signature signature;
+	LUOV_Signature signature;
 	csprng rng , rng2;
 	csprng_init(&rng);
 	csprng_init(&rng2);
@@ -381,7 +390,7 @@ UOVTINF2_Signature UOVTINF2_signDocument(UOVTINF2_SecretKey sk,const unsigned ch
 
 	returns : 0 if the signature is valid, -1 otherwise
 */
-int UOVTINF2_verify(UOVTINF2_PublicKey *pk, UOVTINF2_Signature *signature, unsigned char *document , uint64_t len) {
+int LUOV_verify(LUOV_PublicKey *pk, LUOV_Signature *signature, unsigned char *document , uint64_t len) {
 	int i, k, j , eq , col;
 	Matrix hash , evaluation;
 	twister MT;

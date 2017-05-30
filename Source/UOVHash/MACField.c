@@ -1,3 +1,4 @@
+/* Implementation of the field used for the MAC-polynomials */
 #include "MACField.h"
 
 MAC_FELT MAC_add(MAC_FELT a, MAC_FELT b) {
@@ -71,6 +72,16 @@ MAC_FELT MAC_multiply(MAC_FELT a, MAC_FELT b) {
 	product.coef[1] = (c1 + c4 + c5) % FIELDPRIME;
 	product.coef[2] = (c2 + c5 + c6) % FIELDPRIME;
 	product.coef[3] = add(c3, c6);
+	return product;
+}
+#endif
+
+#if K==3 && FIELDPRIME ==127 /* F127[x]/(x^3-3) */
+MAC_FELT MAC_multiply(MAC_FELT a, MAC_FELT b) {
+	MACFELT product;
+	product.coef[0] = ((a.coef[0] * b.coef[0]) + 3* (a.coef[2] * b.coef[1] + a.coef[1] * b.coef[2])) % FIELDPRIME;
+	product.coef[1] = ((a.coef[1] * b.coef[0] + a.coef[0] * b.coef[1])+ 3*(a.coef[2] * b.coef[2])) % FIELDPRIME;
+	product.coef[2] = (a.coef[2] * b.coef[0] + a.coef[1] * b.coef[1] + a.coef[0] * b.coef[2]) % FIELDPRIME;
 	return product;
 }
 #endif

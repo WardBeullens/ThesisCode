@@ -10,11 +10,11 @@
 	W : The writer object
 	M : The matrix to write
 */
-void serialize_matrix(writer* W, Matrix M) {
+void serialize_matrix(writer* W, Matrix Mat) {
 	int i, j;
-	for (i = 0; i < M.rows; i++) {
-		for (j = 0; j < M.cols; j++) {
-			serialize_FELT(W,M.array[i][j]);
+	for (i = 0; i < Mat.rows; i++) {
+		for (j = 0; j < Mat.cols; j++) {
+			serialize_FELT(W,Mat.array[i][j]);
 		}
 	}
 }
@@ -25,11 +25,11 @@ void serialize_matrix(writer* W, Matrix M) {
 	R : The reader object
 	M : The matrix to read out (this matrix should already have the desired dimensions)
 */
-void deserialize_matrix(reader *R, Matrix M) {
+void deserialize_matrix(reader *R, Matrix Mat) {
 	int i, j;
-	for (i = 0; i < M.rows; i++) {
-		for (j = 0; j < M.cols; j++) {
-			M.array[i][j] = deserialize_FELT(R);
+	for (i = 0; i < Mat.rows; i++) {
+		for (j = 0; j < Mat.cols; j++) {
+			Mat.array[i][j] = deserialize_FELT(R);
 		}
 	}
 }
@@ -224,12 +224,12 @@ void addInPlace(Matrix A, Matrix B) {
 
 	returns : A copy of M
 */
-Matrix copy(Matrix M) {
+Matrix copy(Matrix Mat) {
 	int i, j;
-	Matrix copy = newMatrix(M.rows, M.cols);
-	for (i = 0; i < M.rows; i++) {
-		for (j = 0; j < M.cols; j++) {
-			copy.array[i][j] = M.array[i][j];
+	Matrix copy = newMatrix(Mat.rows, Mat.cols);
+	for (i = 0; i < Mat.rows; i++) {
+		for (j = 0; j < Mat.cols; j++) {
+			copy.array[i][j] = Mat.array[i][j];
 		}
 	}
 	return copy;
@@ -347,9 +347,9 @@ Matrix getSolution(Matrix A) {
 	for (i = rank; i < A.rows; i++) {
 		if (!isEqual(A.array[i][A.cols - 1], ZERO)) {
 			/* Rouché-Capelli says there are no solutions. */
-			Matrix M;
-			M.cols = 0;
-			return M;
+			Matrix Mat;
+			Mat.cols = 0;
+			return Mat;
 		}
 	}
 
@@ -419,11 +419,11 @@ int equals(Matrix A, Matrix B) {
 	rng : the pseudorandom number generator to seed
 	M : The matrix whose entries are the seed for rng
 */
-void csprng_seed_matrix(csprng* rng, Matrix M) {
-	unsigned char* m = malloc(M.cols * M.rows * sizeof(FELT));
+void csprng_seed_matrix(csprng* rng, Matrix Mat) {
+	unsigned char* m = malloc(Mat.cols * Mat.rows * sizeof(FELT));
 	writer W = newWriter(m);
 
-	serialize_matrix(&W, M);
+	serialize_matrix(&W, Mat);
 	csprng_seed(rng, W.next, m);
 	free(m);
 }

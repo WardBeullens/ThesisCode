@@ -22,20 +22,20 @@
     <Filter Include="Source Files\UOVClassic">
       <UniqueIdentifier>{085d8cc6-4aae-417a-bd81-3abf9d425681}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\UOVTinF2">
-      <UniqueIdentifier>{b8c42089-3945-417c-93de-cc9c054d2f8a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\common">
       <UniqueIdentifier>{44e5c73c-8352-4243-9c33-7c767de5de24}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\UOVClassic">
       <UniqueIdentifier>{7fb77098-575c-46db-9c24-f745e5d16eea}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\UOVTinF2">
-      <UniqueIdentifier>{312ee2d5-babc-4851-acc1-ba2706a46301}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\UOVHash">
       <UniqueIdentifier>{bea74799-e319-4b89-a964-9759cee3f770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\LUOV">
+      <UniqueIdentifier>{312ee2d5-babc-4851-acc1-ba2706a46301}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\LUOV">
+      <UniqueIdentifier>{b8c42089-3945-417c-93de-cc9c054d2f8a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -81,17 +81,17 @@
     <ClCompile Include="..\Source\UOVClassic\UOVClassic.c">
       <Filter>Source Files\UOVClassic</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\UOVTinF2\UOVTinF2.c">
-      <Filter>Source Files\UOVTinF2</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\UOVTinF2\128Bitcontainer.c">
-      <Filter>Source Files\UOVTinF2</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\common\PrimeField.c">
       <Filter>Source Files\common</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\UOVHash\MACField.c">
       <Filter>Source Files\UOVHash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\LUOV\128Bitcontainer.c">
+      <Filter>Source Files\LUOV</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\LUOV\LUOV.c">
+      <Filter>Source Files\LUOV</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,23 +149,23 @@
     <ClInclude Include="..\Source\UOVHash\UOVHashApi.h">
       <Filter>Header Files\UOVHash</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\UOVTinF2\128Bitcontainer.h">
-      <Filter>Header Files\UOVTinF2</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2Parameters.h">
-      <Filter>Header Files\UOVTinF2</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2Api.h">
-      <Filter>Header Files\UOVTinF2</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2.h">
-      <Filter>Header Files\UOVTinF2</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\common\PrimeField.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\UOVHash\MACField.h">
       <Filter>Header Files\UOVHash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\LUOV\128Bitcontainer.h">
+      <Filter>Header Files\LUOV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\LUOV\LUOV.h">
+      <Filter>Header Files\LUOV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\LUOV\LUOVApi.h">
+      <Filter>Header Files\LUOV</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\LUOV\LUOVParameters.h">
+      <Filter>Header Files\LUOV</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

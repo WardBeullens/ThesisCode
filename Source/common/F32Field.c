@@ -139,13 +139,13 @@ f32FELT f32Multiply(f32FELT a, f32FELT b) {
 	if (a.c0 == 0 || a.c1 == 0 || b.c0 == 0 || b.c1 == 0) {
 		return f32MultiplyOld(a, b);
 	}
-	uint16_t A, B, C, D;
+	uint16_t A, B, C, E;
 	A = f16Log(a.c0);
 	B = f16Log(a.c1);
 	C = f16Log(b.c0);
-	D = f16Log(b.c1);
+	E = f16Log(b.c1);
 
-	return newF32FELT(f16Antilog((A+C)%f16units) ^ f16Antilog((B+D+13)%f16units) , f16Antilog((B+C)%f16units) ^ f16Antilog((A+D)%f16units) ^ f16Antilog((B + D) % f16units) );
+	return newF32FELT(f16Antilog((A+C)%f16units) ^ f16Antilog((B+E+13)%f16units) , f16Antilog((B+C)%f16units) ^ f16Antilog((A+E)%f16units) ^ f16Antilog((B + E) % f16units) );
 }
 
 /*

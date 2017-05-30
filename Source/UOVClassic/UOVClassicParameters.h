@@ -4,30 +4,18 @@
 #define CLASSICUOVPARAMETERS_H
 
 /* 
-	We define which field to use (options are F16, F32, F48, F64 and F80 ),
+	We define which field to use (options are PRIME_FIELD, F16, F32, F48, F64 and F80 ),
 	and M, the number of equations in the UOV system 
 */
 
-/* 100-bit */
-#define PRIME_FIELD
-#define FIELDPRIME 127
-enum { M = 39 }; 
+/* example1 : 100 bits of security */
+	#define PRIME_FIELD
+	#define FIELDPRIME 127
+	#define M 39
 
-/* 100-bit 
-#define F32
-enum { M = 29 };*/
-
-/* 128-bit : q = 2^48 
-#define F48
-enum { M = 36 };*/ 
-
-/* 192-bit : q > 2^64
-#define F64
-enum { M = 52 };*/
-
-/* 256-bit
-#define F80
-enum { M = 68 };*/
+/* example1 : 100-bits of security  
+	#define F32
+	#define M 29 */
 
 /*derived parameters */
 enum { O = M };

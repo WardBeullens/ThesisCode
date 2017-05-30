@@ -13,7 +13,7 @@
 
 #include "UOVHash.h"
 #include "UOVClassic.h"
-#include "UOVTinF2.h"
+#include "LUOV.h"
 
 #include "api.h"
 
@@ -128,6 +128,10 @@ int main(void)
 	unsigned char *sk = malloc(sizeof(unsigned char[CRYPTO_SECRETKEYBYTES]));
 	unsigned char *sm = malloc(sizeof(unsigned char[59 + CRYPTO_BYTES]));
 	clock_t cl;
+
+	printf("Public Key takes %d B\n", CRYPTO_PUBLICKEYBYTES );
+	printf("Secret Key takes %d B\n", CRYPTO_SECRETKEYBYTES );
+	printf("Signature takes %d B\n\n", CRYPTO_BYTES );
 
 	printf("Public Key takes %.2f kB\n", CRYPTO_PUBLICKEYBYTES / 1024.0);
 	printf("Secret Key takes %.2f kB\n", CRYPTO_SECRETKEYBYTES / 1024.0);

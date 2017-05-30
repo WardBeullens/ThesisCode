@@ -10,6 +10,10 @@
 #include "F64Field.h"
 #include "F80Field.h"
 
+#ifndef K
+#define K 1
+#endif
+
 typedef struct MAC_FELT
 {
 	unsigned char coef[K];

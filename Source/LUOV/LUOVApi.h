@@ -1,6 +1,6 @@
 #include "parameters.h"
 
-#ifdef UOVTINF2
+#ifdef LUOV
 
 #define CRYPTO_SECRETKEYBYTES ( 36 )              /* Number of bytes it takes to encode the secret key */
 #define CRYPTO_PUBLICKEYBYTES ( 5 + ((D2*M)/8) )  /* Number of bytes it takes to encode the public key */

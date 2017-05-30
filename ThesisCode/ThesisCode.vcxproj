@@ -116,7 +116,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Ward\Desktop\ThesisCode\Source\UOVTinF2;C:\Users\Ward\Desktop\ThesisCode\Source\UOVHash;C:\Users\Ward\Desktop\ThesisCode\Source\UOVClassic;C:\Users\Ward\Desktop\ThesisCode\Source\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Ward\Desktop\ThesisCode\Source\LUOV;C:\Users\Ward\Desktop\ThesisCode\Source\UOVHash;C:\Users\Ward\Desktop\ThesisCode\Source\UOVClassic;C:\Users\Ward\Desktop\ThesisCode\Source\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Za %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -158,8 +158,8 @@
     <ClCompile Include="..\Source\UOVHash\MACField.c" />
     <ClCompile Include="..\Source\UOVHash\MerkleTree.c" />
     <ClCompile Include="..\Source\UOVHash\UOVHash.c" />
-    <ClCompile Include="..\Source\UOVTinF2\128Bitcontainer.c" />
-    <ClCompile Include="..\Source\UOVTinF2\UOVTinF2.c" />
+    <ClCompile Include="..\Source\LUOV\128Bitcontainer.c" />
+    <ClCompile Include="..\Source\LUOV\LUOV.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\common\api.h" />
@@ -174,6 +174,7 @@
     <ClInclude Include="..\Source\common\LinearAlgebra.h" />
     <ClInclude Include="..\Source\common\PrimeField.h" />
     <ClInclude Include="..\Source\common\twister.h" />
+    <ClInclude Include="..\Source\LUOV\LUOVApi.h" />
     <ClInclude Include="..\Source\UOVClassic\UOVClassicApi.h" />
     <ClInclude Include="..\Source\UOVClassic\UOVClassicParameters.h" />
     <ClInclude Include="..\Source\UOVClassic\UOVClassic.h" />
@@ -182,10 +183,9 @@
     <ClInclude Include="..\Source\UOVHash\MerkleTree.h" />
     <ClInclude Include="..\Source\UOVHash\UOVHash.h" />
     <ClInclude Include="..\Source\UOVHash\UOVHashParameters.h" />
-    <ClInclude Include="..\Source\UOVTinF2\128Bitcontainer.h" />
-    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2.h" />
-    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2Api.h" />
-    <ClInclude Include="..\Source\UOVTinF2\UOVTinF2Parameters.h" />
+    <ClInclude Include="..\Source\LUOV\128Bitcontainer.h" />
+    <ClInclude Include="..\Source\LUOV\LUOV.h" />
+    <ClInclude Include="..\Source\LUOV\LUOVParameters.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

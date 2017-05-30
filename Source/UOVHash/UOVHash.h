@@ -12,6 +12,11 @@
 #include "UOVClassic.h"
 #include "MACField.h"
 
+#ifndef SIGMA
+#define SIGMA 1
+#endif
+
+
 typedef struct UOVHash_SecretKey {
 	unsigned char seed[KAPPA];
 	uint32_t publicseed;

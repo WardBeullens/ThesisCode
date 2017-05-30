@@ -20,8 +20,8 @@ typedef struct {
 	FELT** array;
 } Matrix;
 
-void serialize_matrix(writer* Buff, Matrix M);
-void deserialize_matrix(reader *Buff, Matrix M);
+void serialize_matrix(writer* Buff, Matrix Mat);
+void deserialize_matrix(reader *Buff, Matrix Mat);
 
 Matrix newMatrix(unsigned int rows, unsigned int cols);
 Matrix zeroMatrix(unsigned int rows, unsigned int cols);
@@ -31,7 +31,7 @@ Matrix randomMatrixrng(int rows, int cols, csprng* rng);
 void printMatrix(Matrix Mat);
 void printMatrixt(Matrix Mat);
 
-void csprng_seed_matrix(csprng* rng, Matrix M);
+void csprng_seed_matrix(csprng* rng, Matrix Mat);
 
 Matrix multiplyAB(Matrix A, Matrix B);
 
